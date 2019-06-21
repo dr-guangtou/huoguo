@@ -1,0 +1,55 @@
+.help iscursor Sep96 stsdas.analysis.isophote
+.ih
+NAME
+iscursor -- Interactive cursor commands for 'isoexam' task.
+.ih
+DESCRIPTION
+The 'isoexam' task supports the following cursor (single) keystrokes
+to control display functions:
+
+.ls ?   Print a help summary of available commands.
+.le
+.ls o
+Zoom out: display fresh image, reset zoom factor to 1.
+.le
+.ls q
+Quit program and close output table.
+.le
+.ls r
+Roam: re-display with centering.
+.le
+.ls z
+Zoom in.
+.le
+
+When the colon (:) key is pressed, control goes temporarily to the text 
+window where single line commands can be entered. All commands have a keyword 
+and optional value. Typing only the keyword shows the current value of the 
+associated parameter. Typing the keyword followed by a space-separated 
+value sets the associated parameter to the new value. 
+
+The single exception is the :dispars command, which is used to set (not show) 
+a command-line parameter string which is passed to the underlying 'display' 
+or 'contour' tasks which handle image display functions. For example,
+the following command can be used to control display grayscale:
+
+.nf
+:dispars z1=0 z2=1000 ztrans="log"
+.fi
+
+All subsequent display operations (zoom, etc.) will inherit the specified
+command-line parameters.
+
+Supported  keywords in colon mode are:
+
+.ls :color [value]
+Set or show current graphics overlay color.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+isoexam
+.endhelp

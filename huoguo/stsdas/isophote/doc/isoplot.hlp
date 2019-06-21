@@ -1,0 +1,52 @@
+.help isoplot Nov95 stsdas.analysis.isophote
+.ih
+NAME
+isoplot -- Plot results from isophotal analysis.
+.ih
+USAGE
+isoplot input xaxis yaxis
+.ih
+DESCRIPTION
+This task shows, in graphic format, results from the isophote 
+fitting task 'ellipse'. 
+
+The input used by 'isoplot' is the main table generated 
+by 'ellipse'.  The 'xaxis' and 'yaxis' parameters specify the 
+table columns containing the data to be plotted.
+
+This task is a script which calls the 'sgraph' task to do the 
+actual plotting. The 'stplot' package must, therefore, be 
+loaded before using this task.  All parameters associated with 
+'sgraph' can be used to tailor the plot format (for more 
+information about doing this, type "help sgraph"). The main
+difference in using this task or 'sgraph' directly is that this
+task takes into account properly the error bars associated with 
+the 'yaxis' data, when appropriate.
+.ih
+PARAMETERS
+.ls input [file name]
+Table created by 'ellipse'.
+.le
+.ls xaxis = ""  [string, Allowed values: SMA | RSMA]
+Column name containing abcissa data to be plotted.
+.le
+.ls yaxis = ""  [string]
+Column name containing ordinate data to be plotted.
+.le
+.ls (device = "stdgraph")
+Graphics device.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+Unexpected results may be produced depending on the 'sgraph' parameter
+values. It is recommended to unlear all psets associated with 'sgraph'
+before running this task.
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+isopall, sgraph, ellipse
+.endhelp

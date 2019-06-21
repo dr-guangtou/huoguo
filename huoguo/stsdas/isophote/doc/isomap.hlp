@@ -1,0 +1,68 @@
+.help isomap Nov95 stsdas.analysis.isophote
+.ih
+NAME
+isomap -- Draw image contours with superposed ellipses.
+.ih
+USAGE
+isomap  image table floor ceiling
+.ih
+DESCRIPTION
+The 'isomap' task draws a contour map from a 2-dimensional 
+image and superposes ellipses on it corresponding to 
+intensity levels. Ellipse data is taken from a table 
+created by the 'ellipse' task. 
+
+This task is a script which calls the tasks 'tsort' and 
+'trebin' in the 'ttools' package.  These tasks create a 
+temporary table with an interpolated version of the original 
+input table.  This temporary table is then fed to the hidden 
+task 'map', which creates a set of temporary files containing 
+coordinates of ellipse points.  The 'plot.contour' task is 
+then invoked to draw contours, and finally, the 'stplot.sgraph' 
+task uses the temporary ellipse point files to draw the 
+ellipses. 
+
+The intensity interval to be contoured is specified by the 
+parameters 'floor' and 'ceiling'.  Care must be taken with 
+these parameters, because the 'trebin' task can also 
+extrapolate from the original data, and meaningless results 
+could be generated in some cases. Linear interpolation is 
+used.  The 'nlevels' parameter specifies the number of levels 
+to be contoured, up to 10.
+
+The packages 'ttools', 'stplot', and 'plot' must be loaded 
+before using this task.
+.ih
+PARAMETERS
+.ls image [file name]
+Input image to be contoured.
+.le
+.ls table [file name]
+Table containing the results of isophotometry analysis 
+(i.e., the table produced by 'ellipse').
+.le
+.ls floor [real]
+Minimum level to be contoured.
+.le
+.ls ceiling [real]
+Maximum level to be contoured.
+.le
+.ls (nlevels = 3) [integer, min=2, max=10]
+Number of contours.
+.le
+.ls (device = "stdgraph") [string]
+Graphics output device.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+Supperposition of contours and ellipses may lack precision when using
+image sections with stepping, due to numerical truncation effects.
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+ellipse
+.endhelp

@@ -1,0 +1,200 @@
+.help elcursor Nov95 stsdas.analysis.isophote
+.ih
+NAME
+elcursor -- Interactive cursor commands for 'ellipse' task.
+.ih
+DESCRIPTION
+If the 'ellipse' task starts with the 'interactive' parameter set to
+'yes', a number of cursor commands become available to the user.
+Single keystroke, as well as "colon-type" commands are supported.
+
+Using cursor commands, the user can, at any time, list and modify
+most control parameters and the current ellipse geometry. 
+
+It is possible to mask/unmask regions in the image, discarding them from 
+subsequent fits, at the same time updating the Bad Pixel Mask associated 
+with the input image. Regions may be specified by a single keystroke, which 
+will mask a square region of specified size centered on the cursor position, 
+or by two keystrokes which mark the opposite vertices of a rectangular region.
+The two-keystroke mode is switched on by setting the 'region' parameter
+to 'yes'.
+
+It is also possible to re-fit at the same semi-major axis length, to go to 
+the next semi-major axis, or to specify a completely arbitrary new semi-major
+axis, center and orientation.  The cursor returns after each isophote fit, 
+until the user selects non-interactive mode, or until all isophotes were
+fitted. Also, some level of display control is available with zoom, roam,
+reset and grayscale control functions.
+
+The single keystroke commands are:
+.ls ?   Print a help summary of available commands.
+.le
+.ls a 
+The cursor position in relation to the current ellipse center is used to 
+re-define the current semi-major axis length and the current position angle.
+.le
+.ls c
+Continue: all subsequent fitting will be performed in non-interactive mode,
+and ellipse plotting will be disabled.
+.le
+.ls d
+Discard: the current isophote is not written to the output table; the program
+proceeds immediately to the next value of the semi-major axis length.
+.le
+.ls f
+Fit: re-fit and plot at the current semi-major axis, do not write to
+output table yet.
+.le
+.ls g
+Give up: discard data from current isophote, stop increasing semi-major
+axis and go inwards.
+.le
+.ls h
+Continue fitting and plotting in non-interactive mode.
+.le
+.ls i
+Inward: change direction from a growing semi-major axis to a shrinking
+semi-major axis.
+.le
+.ls m
+Mask square pixel area under cursor or region.
+.le
+.ls n
+Next: write current isophote, fit and plot at next value of semi-major 
+axis length.
+.le
+.ls o
+Zoom out: display fresh image, reset zoom factor to 1.
+.le
+.ls p
+Plot current ellipse.
+.le
+.ls q
+Quit program and close output table.
+.le
+.ls r
+Roam: re-display with centering.
+.le
+.ls u
+Un-mask square pixel area under cursor or region.
+.le
+.ls x
+Take cursor position as new ellipse center.
+.le
+.ls z
+Zoom in.
+.le
+
+When the colon (:) key is pressed, control goes temporarily to the text 
+window where single line commands can be entered. All commands have a keyword 
+and optional value. Typing only the keyword shows the current value of the 
+associated parameter. Typing the keyword followed by a space-separated 
+value sets the associated parameter to the new value. 
+
+The single exception is the :dispars command, which is used to set (not show) 
+a command-line parameter string which is passed to the underlying 'display' 
+or 'contour' task which handle image display functions. For example,
+the following command can be used to control display grayscale:
+
+.nf
+:dispars z1=0 z2=1000 ztrans="log"
+.fi
+
+All subsequent display operations (zoom, etc.) will inherit the specified
+command-line parameters. Remember that the 'display.zrange' and 
+'display.zscale' parameters must be properly set in order for z1 and z2 to 
+take effect.
+
+Supported  keywords in colon mode are:
+
+.ls :show [file]
+Prints the main parameters and errors of the current isophote. Optionally
+print to a text file.
+.le
+.ls :maxit [value]
+Set or show maximum number of iterations.
+.le
+.ls :minit [value]
+Set or show minimum number of iterations.
+.le
+.ls :integrmode [value]	
+Set or show the integration mode used in sector area averaging 
+(i.e., linear, mean, or median).
+.le
+.ls :minsma [value]
+Set or show the minimum semi-major axis length to fit.
+.le
+.ls :maxsma [value]
+Set or show the maximum semi-major axis length to fit.
+.le
+.ls :step [value]
+Set or show the semi-major axis length step (grow or shrink).
+.le
+.ls :linear [yes | no]
+Set or show semi-major axis length growth mode (linear or geometric).
+.le
+.ls :maxrit [value]
+Set or show maximum semi-major axis length for iterative mode.
+.le
+.ls :maxgerr [value]
+Set or show maximum acceptable radial gradient relative error.
+.le
+.ls :soft [yes | no]
+Set or show soft stopping flag.
+.le 
+.ls :cpar [value]
+Set or show convergency criterion.
+.le
+.ls :usclip [value]
+Set or show sample upper clipping criterion.
+.le
+.ls :lsclip [value]
+Set or show sample lower clipping criterion.
+.le
+.ls :nclip [value]
+Set or show number of clipping iterations.
+.le
+.ls :fflag [value]
+Set or show acceptable fraction of flagged data points in sample.
+.le
+.ls :hcenter [yes | no]
+Hold ellipse center fixed?
+.le
+.ls :hellip [yes | no]
+Hold ellipticity fixed?
+.le
+.ls :hpa [yes | no]
+Hold position angle fixed? 
+.le
+.ls :wander [value]
+Set or show maximum allowable center coordinate wandering.
+.le
+.ls :x0 [value]
+Set or show current center X position.
+.le
+.ls :y0 [value]
+Set or show current center Y position.
+.le
+.ls :ellip [value]
+Set or show current ellipticity.
+.le
+.ls :pa [value]
+Set or show current position angle.
+.le
+.ls :mask [value]
+Set or show current pixel mask size.
+.le
+.ls :region [yes | no]
+Set or show current region flag.
+.le
+.ls :color [value]
+Set or show current graphics overlay color.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+ellipse
+.endhelp

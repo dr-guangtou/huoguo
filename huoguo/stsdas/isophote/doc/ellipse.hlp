@@ -1,0 +1,329 @@
+.help ellipse Nov95 stsdas.analysis.isophote
+.ih
+NAME
+ellipse -- Fit elliptical isophotes to galaxy images.
+.ih
+USAGE
+ellipse  in_image out_table
+.ih
+DESCRIPTION
+The 'ellipse' task fits elliptical isophotes to galaxy images --- this 
+task performs the basic isophotal analysis used by other tasks in this 
+package.
+
+The task reads one 2-dimensional image section and produces as main output
+one table which contains 40 or more columns with parameters for each fitted 
+isophote, one table row for each isophote. Optional products include a
+family of tables that contain each individual elliptical sample extracted
+from the image at each isophote, in the form intensity versus position 
+angle, as well as individual plots of these samples.
+During the fitting process, some of the isophote parameters can be displayed 
+in tabular form on the user's terminal screen (i.e., they are sent to 
+STDOUT); these parameters allow the user to monitor the fitting process. 
+The task can also be run in interactive mode, where the user has greater 
+control over its operation.
+
+The main output table content is described in more detail near the end of this 
+section. For galaxy brightness profile analysis (1-D), see task  
+'fitting.nfit1d'.
+For a more detailed description of some internal features of this task,
+use `help ellipse opt=sys'.
+
+The image is measured using an iterative method described by Jedrzejewski
+(Mon.Not.R.Astr.Soc., 226, 747, 1987). Each isophote is fitted at a 
+pre-defined, fixed semi-major axis length. The task starts from a first
+guess elliptical isophote defined by approximate values for the X and Y 
+center coordinates, ellipticity and position angle. Using these values, 
+the image is sampled along an elliptical path (see 'samplepar' pset)
+producing a 1-dimensional intensity distribution as a function of position 
+angle E. The harmonic content of this distribution is analyzed by least-squares 
+fitting to the function:
+
+.nf
+
+y  =  y0 + A1 * sin(E) + B1 * cos(E) + A2 * sin(2 * E) + B2 * 
+cos (2 * E)
+
+.fi
+Each one of the harmonic amplitudes A1, B1, A2, B2 is related to a
+specific ellipse geometric parameter, in the sense that it conveys
+information regarding how much the current parameter value deviates 
+from the "true" one. To compute this deviation, the local image radial
+gradient has to be taken into account too. The algorithm picks up the
+largest amplitude among the four, estimates the local gradient and
+computes the corresponding increment in the associated ellipse parameter.
+That parameter is updated,  and the image is resampled.  This process is 
+repeated until any one of the following criteria are met: 
+.ls (1)
+The largest harmonic amplitude is less than a given fraction
+of the rms residual of the intensity data around the harmonic fit.
+.le
+.ls (2)
+A user-specified maximum number of iterations is reached.
+.le
+.ls (3)
+More than a given fraction of the elliptical sample points have no
+valid data in then, either because they lie outside the image boundaries 
+or because they where flagged out from the fit (see below).
+.le
+
+In any case, a minimum number of iterations is always performed. 
+See 'controlpar' pset for details.
+If iterations stop because of reasons 2 or 3 above, then 
+those ellipse parameters that generated the lowest absolute 
+values for harmonic amplitudes will be used. 
+At this point, the image data sample coming from the best fit 
+ellipse is fitted by the following function:
+.nf
+
+y  =  y0  +  An * sin(n * E)  +  Bn * cos(n * E)
+
+.fi
+with n = 3 and n = 4.  The amplitudes (A3, B3, A4, B4),
+divided by the semi-major axis length and local intensity 
+gradient, measure the isophote's deviations from perfect 
+ellipticity (the amplitudes divided by semi-major axis and gradient, are
+the actual quantities written at the output table). 
+
+The task then measures the integrated intensity and
+the number of non-flagged pixels inside the elliptical isophote
+and also inside the corresponding circle with same center and radius
+equal to the semi-major axis length. These parameters, some other associated 
+parameters, and some auxiliary information, are written to the 
+output table(s). See 'magpar' pset.
+
+Optionally, the user can explicitly define a list of upper harmonics to 
+be fitted to the best-fit intensity sample. The output table will contain
+additional columns with these harmonic amplitudes and their errors.  
+
+It must be emphasized that the algorithm was designed explicitly with
+a galaxy brightness distribution in mind. In particular, a well defined
+negative radial intensity gradient across the region being fitted is 
+paramount for the achievement of stable solutions. Use of the
+algorithm in other types of images (e.g., planetary nebulae) may lead
+to inability to converge to any acceptable solution.
+
+After fitting the ellipse that corresponds to a given value of the
+semi-major axis (by the process described above), the axis length is
+incremented/decremented following a pre-defined rule. At each step, 
+the starting ellipse parameters are taken from the previously fitted 
+ellipse that has the closest semi-major axis length to the current one.
+On low surface brightness regions (i.e., those having large radii), the 
+small values of the image radial gradient can induce large corrections and 
+meaningless values for the ellipse parameters. The task has capabilities to 
+stop increasing semi-major axis based on several criteria, including
+signal-to-noise ratio. See the 'geompar' pset for details.
+
+Errors in intensity, magnitude and local gradient are obtained directly
+from the rms scatter of intensity data along the fitted ellipse. 
+Ellipse geometry parameter errors are obtained from the internal errors in 
+the harmonic fit, after removal of the first and second fitted harmonics.
+Harmonic amplitude errors are obtained from the fit error after removal of 
+all harmonics up to, and including, the one being considered. See error
+analysis in Busko, I., 
+1996, Proceedings of the Fifth Astronomical Data Analysis
+Software and Systems Conference, Tucson, PASP Conference Series v.101,
+ed. G.H. Jacoby and J. Barnes, p.139-142.
+
+Interactive mode can be used with either an image server (Ximtool/SAOimage)
+or standard IRAF graphics (stdgraph). In interactive mode, the task begins
+by automatically displaying the input image and waiting for cursor commands.
+The 'device' task parameter selects the color of the graphics overlay on the
+gray-scale display, or the standard graphics output. Frame 1 of the image
+server is used. Due to limitations in the current graphics-image
+interface in IRAF, screen updates during cursor processing take a time 
+proportional to the display buffer size. Small sizes (up to 512 x 512) are recommended. 
+
+Using cursor commands, the user can, at any time, list or modify most of the 
+algorithm control parameters, as well as the current ellipse geometry. 
+Functions as zoom, roam, reset, and limited gray-scale control, are also
+available. Pixel masking/unmasking can be done as well. The cursor comes 
+back after each isophote fit, until the user chooses to continue in 
+non-interactive mode, or until the minimum fitting semi-major axis is 
+reached. Type 'help elcursor' for a description of all available cursor 
+commands. 
+
+Bad pixel flagging can be accomplished in a number of ways:
+.ls o
+If a HST-style Data Quality File (DQF) is associated with the input image, 
+it can be read by the task and used to flag pixels out from the fit. If only 
+the DQF name extension is provided, task assumes DQF has the same root name 
+as the main input image.
+.le
+.ls o
+The task can also read a Bad Pixel Mask image, which is stored in the IRAF 
+"pixel list" format. It has the same root name as the main input image, but 
+with extension '.pl'. The task reads the bad pixel mask automatically at task 
+startup, if available, and its contents can be modified, or it can be created 
+from scratch, by interactive cursor commands. This automatic recognition
+of the bad pixel mask only works when the input image name extension is
+three characters long, such as in "imh", "hhh" or "fit".
+The flagging of bad pixels
+in the mask file follows the same convention as the HST Data Quality Files:
+zeroed pixels in the bad pixel mask mean that the corresponding pixel
+in the science image is good; non-zero pixels in the mask mean that the
+corresponding science pixel should be rejected at fitting time. 
+.le
+.ls o
+The task provides also a k-sigma clipping algorithm for cleaning deviant
+sample points at each isophote, thus improving convergency stability against 
+stars, defects, etc. 
+.le
+
+The task can be run in either memory-intensive or disk-intensive modes.
+Disk-intensive is not recommended unless as a last resort to overcome
+"Out of memory" problems, because it has a large penalty in execution
+speed. In memory-intensive mode the task reads the full input file image 
+section as a real array in memory. If the object to be measured is small
+compared with the frame dimensions, the best approach to save memory is 
+to directly input an appropriate subsection of the larger, original image. 
+All input/output coordinate information can still be handled by the task
+in the original image's coordinate reference system. See the 'geompar' 
+pset for details.
+
+Output directed to STDOUT is a table with one row for each isophote. 
+Each row contains the following data: semi-major axis length, mean 
+isophotal intensity and its rms, ellipticity and its error, position 
+angle and its error, radial gradient relative error, number of valid 
+data points used in the fit, number of flagged data points (either 
+removed from the image or clipped out), number of iterations, and 
+stop condition code.  The stop code can have the following values:
+.nf
+     0 - normal.
+     1 - less than pre-specified fraction of the extracted data 
+         points are valid.
+     2 - exceeded maximum number of iterations.
+     3 - singular matrix in harmonic fit, results may not be valid.
+         Also signals insufficient number of data points to fit.
+     4 - small or wrong gradient, or ellipse diverged; subsequent
+         ellipses at larger semi-major axis may have the same constant
+         geometric parameters.
+    -1 - isophote was saved before completion of fit (by a cursor 
+         command in interactive mode).
+
+.fi
+The main output table also contains one row for each value of the semi-major 
+axis length. The labeling of each column is as follows: 
+.nf
+
+Column             -  Contents
+
+
+SMA                -  semi-major axis length (pixel)
+INTENS             -  mean isophotal intensity
+INT_ERR            -  error in isophotal intensity (RMS / sqrt(NDATA))
+PIX_VAR            -  estimate of pixel variance (RMS * sqrt(SAREA))
+RMS                -  root-mean-square scatter around isophotal intensity
+ELLIP              -  ellipticity
+ELLIP_ERR          -  ellipticity error
+PA                 -  position angle (degrees counterclokwise from +y)
+PA_ERR             -  position angle error
+X0, Y0             -  ellipse center (pixel)
+X0_ERR, Y0_ERR     -  error of ellipse center
+GRAD               -  local radial intensity gradient
+GRAD_ERR           -  gradient error
+GRAD_R_ERR         -  gradient relative error
+RSMA               -  (semi-major axis length) ** 1/4
+MAG                -  mean isophotal magnitude
+MAG_LERR, MAG_UERR -  lower and upper magnitude errors
+TFLUX_E            -  total flux enclosed by ellipse
+TFLUX_C            -  total flux enclosed by circle
+TMAG_E             -  total flux enclosed by ellipse, in magnitudes
+TMAG_C             -  total flux enclosed by circle, in magnitudes
+NPIX_E             -  total number of valid pixels inside ellipse
+NPIX_C             -  total number of valid pixels inside circle
+A3, B3             -  3rd harmonic deviations from ellipse
+A4, B4             -  4th harmonic deviations from ellipse
+A3_ERR, B3_ERR     -  3rd harmonic deviation errors
+A4_ERR, B4_ERR     -  4th harmonic deviation errors
+NDATA              -  number of valid data points on isophote
+NFLAG              -  number of flagged data points on isophote
+NITER              -  number of iterations
+STOP               -  stop condition code
+A_BIG              -  maximum (in abs. value ) among 1st and 2nd 
+                      harmonic amplitudes
+SAREA              -  average sector area on isophote (pixel)
+AIn, BIn           -  optional n-th harmonic amplitudes
+AIn_ERR, BIn_ERR   -  optional n-th harmonic amplitude errors
+
+The input image name is written to the main output table header.
+
+The task has also the capability to read in a table previously generated
+by itself when applied to a given image, and use the ellipse geometry 
+information in each table row to measure another (related) image. In
+this mode the fitting algorithm is disabled and the task just extracts
+photometry information from the image. This mode is activated by setting
+task parameter 'inellip' to the name of the table that contains the
+results of a former execution of the task. This feature is useful when
+measuring paired images e.g. as in a multicolor set to derive color
+indices and gradients.
+.fi
+
+.ih
+PARAMETERS
+.ls input [file name]
+Image section to be measured. If a .pl mask file exists in the same
+directory, a explicit extension should be provided in the input file name.
+.le
+.ls output [file name]
+Main output table name.
+.le
+.ls (dqf = "") [file name]
+Data Quality File name or extension. If set to "none", eventually existing 
+DQF is ignored.
+.le
+.ls (inellip = "") [file name]
+Input table in "ellipse" format, to be used in no-fit, photometry-only
+mode.
+.le
+.ls (geompar) [pset]
+Pset with geometry-defining parameters.
+.le
+.ls (controlpar) [pset]
+Pset with algorithm control parameters.
+.le
+.ls (samplepar) [pset]
+Pset with sampling control parameters.
+.le
+.ls (magpar) [pset]
+Pset with magnitude scale parameters.
+.le
+.ls (interactive = no) [boolean]
+Run task in interactive mode ? 
+.le
+.ls (device = "red") [string, allowed values: |stdgraph|white|red|green|blue|yellow]
+Interactive device. For gray-scale image servers ('Ximtool', 'SAOimage'), 
+use color of graphics overlay. Server process must be already activated
+at workstation. For standard IRAF line-graphics, use 'stdgraph'.
+.le
+.ls (icommands = "") [*imcur]
+Optional file with image cursor commands. If left empty, task will read
+standard "imcur" input when in interactive mode.
+.le
+.ls (gcommands = "") [*gcur]
+Optional file with graphics cursor commands. If left empty, task will read
+standard "gcur" input when in interactive mode.
+.le
+.ls (masksz = 5) [int, min=1]
+Size of pixel masking area when 'm' cursor command not in region mode.
+.le
+.ls (region = no) [boolean]
+Pixel masking by 'm' cursor key is in region mode ?
+.le
+.ls (verbose = yes) [boolean]
+List summary at STDOUT ?
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+elcursor, geompar, controlpar, samplepar, magpar, nfit1d.
+
+For a more detailed description of some internal features of this task,
+use `help ellipse option=sysdoc'.
+.endhelp

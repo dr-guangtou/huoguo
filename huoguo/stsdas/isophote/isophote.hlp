@@ -1,0 +1,24 @@
+.help isophote Nov95 stsdas.analysis
+
+This package contains tasks which perform elliptical isophote analysis.
+The main task is 'ellipse', which fits a set of elliptical isophotes over 
+an image. The algorithm is closely based on the description given by 
+Jedrzejewski (Mon.Not.R.Astr.Soc., 226, 747, 1987). The output of 
+isophote fitting is a STSDAS table.
+
+The table containing isophote information is used as input by the remaining
+tasks in this package. Task 'bmodel' reads the table and builds an artificial 
+image with a photometric model of the original image. 
+
+Task 'isoplot' can be used to quickly examine, in graphic form, the run of 
+any isophote parameter against ellipse semi-major axis. Task 'isopall' 
+builds a graphic mosaic simultaneously showing the run of nine isophote 
+parameters against ellipse semi-major axis. Task 'isomap' draws a contour 
+map of the original image, and superposes on it the ellipses corresponding 
+to the contoured levels. In an analogous way, task 'isoimap' superposes 
+ellipses on the gray-scale image display. Task 'isoexam' can be used to 
+visually inspect the results of a fit, reading ellipses directly from the 
+table, superposing them either on the image display or the contour graphics,
+and enabling user interaction through the image/graphics cursor.
+
+.endhelp

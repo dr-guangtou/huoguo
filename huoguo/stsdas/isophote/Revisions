@@ -1,0 +1,176 @@
+22 Dec 99
+
+Modified magnitude definitions.
+
+13 Jan 98
+
+Added upper and lower sigma-clip thresholds.
+
+20 Oct 97
+
+Added variable threshold in object locator.
+
+22 Sept 97
+
+Changed the starting gradient value, from 1/10 of the current mean
+value, to -0.05. The former value wasn't working for some images.
+
+16 Sept 96
+Created new task 'isoexam'.
+
+13 Sept 96
+ellipse was modified in order to read ellipse geometry information from a 
+previously generated table and perform photometry only (no fit). 
+
+23 Jul 96
+Added wander limits for ellipse center. Also fixed PAe labels in
+table and plot, and added image and graphics cursor parameters.
+
+12 Jun 96
+Second version rolled into standard "isophote" STSDAS place.
+
+Nov 1995
+Beta release of second version.
+
+04 Sep 1991
+Fixed bug in ellipse.par. Changed a0 and maxa parameters from INDEF-
+value hidden parameters to mandatory parameters with reasonable default
+values.
+
+04 Sep 1991 
+Fixed bug in isoplot.par and isopall.par.  The CL handles parameter
+range checking in strings. In this particular case, the xaxis parameter in
+both tasks has as allowed values "a" and "a**1/4". However, since both
+strings begin with the character "a", the CL is unable to handle the
+selection properly. In these new versions, there is no more range checking 
+string in xaxis definition.
+
+06 May 1991
+Fixed bug in elfit.x. The algorithm was unable to work on images with 
+small pixel intensities (~<1.e-7). The problem was traced to the code
+that handles the case of very small radial intensity gradients. Code
+was changed to work with relative (percentual) gradients instead.
+
+02 May 1991:
+Changed output formats in elcolnames.h, from 'f' to 'g' real.
+
+02 May 1991:
+Fixed bug in elfit.x. The algorithm was not handling properly the case
+of negative ellipticity. This generated sometimes curious behavior in the 
+first fitted isophote, like a wrong, underestimated intensity level. The
+bug manifested itself in a way which was data-dependent.
+
+08 Jan 1991:
+Two bugs were fixed in 'ellipse' task: (i) wrong position angle error
+was being displayed  by 'show' colon command; (ii) the intensity
+samples (intensity versus angle files) were being output with the 1st
+and 2nd harmonics subtracted.
+
+10 Dec 1990:
+Fixed an error which prevented the 'n' cursor key to work properly, when
+the initial ellipse was being input by cursor commands.
+
+21 Sep 1990:
+Task 'ellipse' was modified to handle a bad pixel list. The list can be
+created outside the task and input to it, or it can be created/updated,
+when in interactive mode, by the cursor keys 'e' and 's'.
+
+20 Sep 1990:
+The image reconstruction algorithm used in task 'model' was modified as to work
+with fractional pixel offsets. This produces much more accurate modelling of
+the central galaxy regions (a < 10 pixels), where the radial intensity gradient
+is usually large. Files bmodel.par and bmodel.hlp were also modified.
+
+10 Sep 1990:
+A new version of the package was installed. Besides minor bug fixes in
+the plotting tasks, a major upgrade on the ellipse fitting task `ellipse'
+was carried out: now there is an interactive mode. Both stdgraph and
+imdX devices are supported. Other modifications include: (i) automatic 
+clipping off of deviant data points; (ii) sub-pixel integration at the central
+region; (iii) ellipse geometric parameters can be hold fixed; (iv) linear
+growing radius; (v) extra harmonics can be fitted and output.
+
+02 Aug 1990:
+Changed sign of 3rd and 4th harmonic amplitudes, to be compatible with
+the convention used in the literature to describe 'boxy' and 'disky'
+isophotes.
+
+30 Jul 1990:
+Task 'isomap' produced wrong superposition of image contours and ellipses when
+using image sections in task 'ellipse' input. It works correctly now, but
+numerical truncation still produces small errors, when the section has a
+sampling > 1. 
+
+30 Jul 1990:
+Changed definition of ellipse position angle. Now it is measured
+counterclockwise from the +y direction. Files affected: ellipse.x, eldump.x. 
+
+27 July 1990:
+The file name (plus section) of the original image analysed by task 'ellipse'
+is now added to the output table as a header parameter. Files affected:
+ellipse.x, elopens.x. 
+
+18 July 90:
+Modified error calculation for ellipse geometrical parameters and Fourier
+harmonic amplitudes. The new error definition depends on the residual rms
+after removal of the harmonics up to, and including, the one being
+considered. Fixed inconsistent plotting of error bars, due to the way
+sgraph interprets errors in a sdas table. 
+Files affected: tasks/elfit.x, tasks/elharmonics.x, isoplot.cl, isopall.cl
+
+04 Jun 1990:
+An incompatibility in column names used by two tasks generated a segmentation
+violation error in task 'bmodel'. Column names were moved to an include file
+(elcolnames.h). The affected source files were modified accordingly. Modified
+files are: elapert.x, ellipse.x, elopens.x, map.x, model.x 
+
+09 March 1990:
+When extrapolating a table, trebin can generate negative values for the ellipse
+semi-major axis. This introduced an infinite loop in the hidden task map. 
+Corrected the problem. 
+
+01 March 1990:
+Problems were corrected in the magnitude calculation (and plotting) of 
+negative numbers.  Files modified: eldump.x, ellipse.x, isoplot.cl, 
+isopall.cl. Also, corrected problems with a table column named 'int' by 
+renaming it 'meanint'.  Modified files: elopens.x, isomap.cl, isoplot.cl, 
+ellipse.hlp.
+
+12 February 1990:
+Moved the isophote analysis tasks from 'stlocal.stsurfphot' to a new top-level
+package named 'isophote'. Removed stsurfphot from stlocal.
+
+07 February 1990:
+The isophotal magnitude calculation was undefined when the isophotal
+intensity was negative. Changed log function to elogr (in gio), to
+take care of negative intensities.
+
+26 December 1989:
+Added a new task (ELAPERT) to build elliptical apertures for use in the
+APPHOT.POLYPHOT polygonal aperture photometry task.
+
+20 December 1989:
+Improvements were made in tasks ELLIPSE and MODEL (hidden task called by 
+BMODEL) to increase the execution speed. 
+
+07 December 1989:
+Fixed a bug in the hidden task MODEL. The background value of model image 
+wasn't being generated correctly. 
+
+19 November 1989:
+New tasks were added to the package: BMODEL, which builds a model image
+based on the results of isophotal analysis generated by task ELLIPSE; and
+ISOMAP, which graphs image contours with ellipses superimposed on them.
+Upgraded the task ELLIPSE, which is now able to integrate the intensity
+information along elliptical annulus sectors over the image. ELLIPSE can
+now generate an optional set of files with the intensity versus eccentric
+angle information for each fitted isophote. Some minor corrections were
+also made in several pieces of code in this package, mainly to get rid
+of incompatibilities between the script tasks which depend on SGRAPH.
+
+25 October 1989:
+Installed a new subpackage in stlocal, which contains the elliptical isophote
+fitting task "ellipse", as well as auxiliary tasks intended to examine the
+results of isophotal analysis. This software was not installed in the playpen
+package, as initially intended, because playpen is not available on some
+Institute machines. 

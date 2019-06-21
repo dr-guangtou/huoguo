@@ -1,0 +1,45 @@
+include	<math/iminterp.h>
+
+# EL_SUBPIX -- Integrates intensity distribution over target pixel. This
+# is an experimental version using the IRAF interpolation routines in
+# math$iminterp. Experiments with 3rd degree 2-dim polynomials and
+# bi-cubic splines showed no improvement over the existing bi-linear
+# interpolation. In particular, the bi-cubic spline interpolation is prone
+# to introduce larger 3rd and 4th order harmonic amplitudes at radii
+# <= 4 pixels.
+
+real procedure el_subpix (pixels, x, y)
+
+pointer	pixels
+real	x, y			# fractional position of target pixel + 1
+
+pointer msi
+real	sum, datain[4,4]
+
+real	msisqgrl()
+
+begin	
+	datain[1,1] = Memr[pixels]
+	datain[2,1] = Memr[pixels+1]
+	datain[3,1] = Memr[pixels+2]
+	datain[4,1] = Memr[pixels+3]
+	datain[1,2] = Memr[pixels+4]
+	datain[2,2] = Memr[pixels+5]
+	datain[3,2] = Memr[pixels+6]
+	datain[4,2] = Memr[pixels+7]
+	datain[1,3] = Memr[pixels+8]
+	datain[2,3] = Memr[pixels+9]
+	datain[3,3] = Memr[pixels+10]
+	datain[4,3] = Memr[pixels+11]
+	datain[1,4] = Memr[pixels+12]
+	datain[2,4] = Memr[pixels+13]
+	datain[3,4] = Memr[pixels+14]
+	datain[4,4] = Memr[pixels+15]
+
+	call msiinit (msi, II_BISPLINE3)
+#	call msiinit (msi, II_BILINEAR)
+	call msifit (msi, datain, 4, 4, 4)
+	sum = msisqgrl (msi, x+.5, x+1.5, y+.5, y+1.5)
+	call msifree (msi)
+	return (sum)
+end

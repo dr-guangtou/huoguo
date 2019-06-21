@@ -1,0 +1,44 @@
+# Make ISOPHOTE
+#
+# Author: I.Busko, 12-FEB-90
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+debug:
+        $set    XFLAGS = "-fgq $(XFLAGS)"
+	$set	LFLAGS = "$(LFLAGS) -/Bdynamic"
+        $call   relink
+        ;
+
+relink:
+	$update	isophote.a
+	$call	isophote
+	;
+
+install:
+	$move	xx_isophote.e stsdasbin$x_isophote.e
+	;
+
+isophote:
+linkonly:
+	$omake	x_isophote.x
+	$link	x_isophote.o isophote.a -lxtools -lstxtools -ltbtables \
+		-liminterp -o  xx_isophote.e
+	;
+
+isophote.a:
+	@src
+	;

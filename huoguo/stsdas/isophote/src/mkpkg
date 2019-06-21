@@ -1,0 +1,59 @@
+# Make isophote tasks.
+#
+# Original 5-Jan-1990  (Ivo Busko)
+# Modified   Nov-1995  (IB)
+
+$checkout isophote.a ../
+$update   isophote.a
+$checkin  isophote.a ../
+$exit
+
+isophote.a:
+	t_ellipse.x	ellipse.h elcolnames.h <imset.h> <imhdr.h> <error.h> <imio.h> <tbset.h> <ctype.h> eldisplay.h
+	t_isoexam.x	ellipse.h elcolnames.h <imset.h> <imhdr.h> <error.h> <imio.h> <tbset.h> <ctype.h> eldisplay.h
+	elbilinear.x	ellipse.h
+	elclip.x	
+	elcolon.x	ellipse.h eldisplay.h <error.h> <gset.h> <gio.h>
+	elcopy.x	ellipse.h
+	elcursor.x	eldisplay.h
+	eldisplay.x	ellipse.h eldisplay.h <imio.h> <imhdr.h>
+	eldsample.x	ellipse.h elcolnames.h <imio.h> <tbset.h>
+	eldump.x	ellipse.h <imio.h>
+	elfind.x	ellipse.h <imhdr.h>
+	elfit.x		ellipse.h <error.h> <imhdr.h> <imio.h>
+	elgeometry.x	ellipse.h eldisplay.h <imio.h> <imhdr.h>
+	elget.x		ellipse.h <imhdr.h>
+	elgetpix.x	ellipse.h <imhdr.h>
+	elgetsec.x	ellipse.h <imhdr.h>
+	elgopen.x	eldisplay.h <gset.h>
+	elgraphics.x	eldisplay.h
+	elharmonics.x	ellipse.h
+	elhead.x
+	elimname.x	ellipse.h <imio.h>
+	elinrow.x	ellipse.h elcolnames.h <tbset.h> 
+	elintegr.x	ellipse.h <imhdr.h>
+	elintfit.x	ellipse.h eldisplay.h
+	elmask.x	ellipse.h eldisplay.h <imhdr.h>
+	elmatrix.x
+	elodqf.x	ellipse.h <imio.h>
+	elopens.x	ellipse.h elcolnames.h <imio.h>
+	elopm.x		ellipse.h <imio.h> <imhdr.h>
+	elpflag.x	ellipse.h <imhdr.h>
+	elplot.x	ellipse.h eldisplay.h <imhdr.h>
+	elpolar.x	ellipse.h
+	elppix.x	eldisplay.h <gset.h>
+	elpsample.x	ellipse.h <gset.h>
+	elqsortr.x
+	elrtable.x	ellipse.h <tbset.h>
+	elshow.x	ellipse.h
+	elsubpix.x
+	elzero.x	ellipse.h
+	extnstr.x
+	ipdisplay.x	ellipse.h eldisplay.h <tbset.h> <imio.h> <imhdr.h>
+	ipdoit.x	ellipse.h eldisplay.h
+	ipcolon.x	ellipse.h eldisplay.h <error.h> <gset.h> <gio.h>
+	reorder.x	<tbset.h>
+	t_map.x		ellipse.h elcolnames.h <tbset.h> <ctype.h> <imset.h> <imhdr.h> 
+	t_model.x		ellipse.h elcolnames.h <imhdr.h> <imset.h> <tbset.h> 
+	;
+

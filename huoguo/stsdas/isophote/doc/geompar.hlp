@@ -1,0 +1,199 @@
+.help geompar Oct97 stsdas.analysis.isophote
+.ih
+NAME
+geompar -- Set the geometric parameters for the 'ellipse' task.
+.ih
+USAGE
+geompar
+.ih
+DESCRIPTION
+This pset is used to set the geometrical parameters associated with
+the 'ellipse' task. 
+
+There are two basic types of geometrical parameters:
+.ls (1)
+Parameters that specify the first trial ellipse to be used by the task:
+'sma0', 'x0', 'y0', 'ellip0' and 'pa0'. 
+.le
+.ls (2)
+Parameters that describe how to generate appropriate values for the semi-major 
+axis length: 'minsma', 'maxsma', 'step', 'linear' and 'maxrit'.
+.le
+
+After fitting the first isophote, departing from values taken from type 1 
+parameters, the task proceeds by updating the semi-major axis length 
+following rules defined by type 2 parameters, and using at each step for
+the first guess ellipse parameters the solution from the previous fit.
+
+The semi-major axis update can be linear or geometric, depending on the 
+'linear' task parameter. If the geometric growing mode is chosen, the 
+semi-major axis length is increased by a factor of (1.  + 'step'), and 
+the process is repeated until either the semi-major axis value reaches 
+the value 'maxsma', or the last fitted ellipse has more than a given 
+fraction of its sampled points flagged out (see 'samplepar' pset). The 
+process then resumes from the first fitted ellipse (at 'sma0') inwards, in 
+steps of (1./(1.  + 'step')), until the semi- major axis length reaches 
+the value 'minsma'. In case of linear growing, the increment or decrement 
+value is given directly by 'step' in pixels. If 'maxsma' is set to INDEF,
+the semi-major axis will grow until a low signal-to-noise criterion is met.
+See 'controlpar' pset for details.
+
+Type 1 parameters have default values that usually guarantee that the first
+isophote will be fitted properly. The starting semi-major axis 
+length, 'sma0', cannot be very small or zero because in the very central 
+regions of a galaxy image the geometry information is usually too much 
+distorted due to pixelation and/or seeing. It cannot be too large either, 
+because at external galaxy regions the low signal-to-noise might preclude a 
+proper fit. An intermediate region will ensure the proper balance between 
+high S/N, low geometrical distortion, and reasonably large number of pixels.
+
+Position angles are defined in the range -90 < PA <= 90.
+Avoid using as starting position angle 'pa0 = 0.', since the algorithm may 
+not work properly in this case. When the object is such that position angles 
+are near either extreme of the range, noise can make the solution jump back 
+and forth, between successive isophotes, by amounts close to 180 degrees.
+The output table may be cleaned of those jumps by processing it with
+task 'ttools.tcalc' using
+.nf
+
+equals = if PA<0. then PA+180. else PA
+
+.fi
+or a similar expression.
+
+Parameter 'maxrit' sets the maximum semi-major axis length for iterative
+mode. When fitting at larger semi-major axis lengths, the ellipse geometry
+parameters (center, ellipticity, position angle) are kept fixed at their
+last fitted values. This may be useful for sampling regions of very low
+surface brightness, where the algorithm may become unstable and unable to
+recover reliable geometry information from isophotes. If set to INDEF,
+iterative mode continues out to where lack of either signal-to-noise or
+number of valid data points forces the task to stop growing the semi-major 
+axis (see 'controlpar' pset).
+
+The algorithm has no ways of finding where, in the input image section, 
+the galaxy to be measured sits in. That is, 'x0' and 'y0' must be properly 
+set from start. Since they are set by default to INDEF, the task has a number 
+of options to set them properly. First, an object locator routine is run,
+scanning a 10X10 window centered either on the input 'x0', 'y0' coordinates
+or, if any one of them, or both, are set to INDEF, on the input image section 
+center. A number of actions are possible depending on the successful (or not)
+acquisition of an object. Below it is shown what takes place 
+depending on the
+values of parameters 'interactive', 'recenter' and 'xylearn':
+.ls Successful acquisition:
+.ls Starting 'x0','y0' set to INDEF or outside image section boundaries:
+Task begins at once to fit at position found by object locator.
+.le
+.ls Valid starting 'x0','y0':
+Task looks to 'recenter' parameter. If 'yes', fit at position found by
+object locator. If 'no', fit at original 'x0','y0' position.
+.le
+.le
+.ls Not successful acquisition:
+.ls Starting 'x0','y0' set to INDEF or outside image section boundaries:
+.ls Interactive mode:
+Task issues a warning message and turns cursor on at once. User is supposed
+to identify galaxy center in the displayed image (using 'x' cursor keystroke).
+.le
+.ls Non-interactive mode:
+If 'xylearn' is set to 'yes', task prompts user at STDIN for 'x0','y0',
+even if it is being run with mode=h. If 'xylearn' is set to 'no', aborts.
+.le
+.le
+.ls Valid starting 'x0','y0':
+Atempts to fit at 'x0','y0' position anyway.
+.le
+.le
+
+Parameter 'xylearn' is used to automatically update the pset when valid
+center coordinates become available. If 'xylearn' is set to 'yes' and
+'x0','y0' are set to INDEF, the task will write to the 'geompar' pset the 
+valid values that will come either from the object locator or the 
+cursor/STDIN input. If 'xylearn' is set to 'no', nothing happens. This
+feature is useful when trying several runs of 'ellipse' on the same 
+object. The first time the task is run, the object center must be 
+defined by the user, but in subsequent runs this step is skipped. 
+
+In some cases the object locator algorithm mail fail, even though there
+is enough signal-to-noise to start a fit (e.g. in objects with very
+high ellipticity). In those cases the sensitivity of the algorithm
+can be decreased. See the 'controlpar' pset.
+
+Full support for World Coordinate System (WCS) is not available in this
+version of 'ellipse'. However there is a simpler scheme for handling 
+relative coordinates, that works only in pixel units. Task parameter 
+'physical' controls the choice between "physical" or "section" coordinate 
+systems. If set to 'no', pixel coordinates relative to the input image section 
+will be used throughout. If set to 'yes', pixel coordinates will be relative 
+to the full 2-D frame corresponding to the input image name eventually stripped 
+of subsection specification. This feature can be useful, for instance, when 
+handling a large image with many objects scattered around the field. 
+Each object can be measured by an independent 'ellipse' call in a batch 
+script, using for each object just the subsection that contains the object, 
+thus saving memory and speeding up the fit. The resulting tables with center
+coordinates will nevertheless share the same coordinate system of the main
+image. This section handling scheme also supports stepping (the same in
+both directions X and Y) and multi-dimensional image files.
+.ih
+PARAMETERS
+.ls (x0 = INDEF) [real, min=1.0]
+Initial ellipse center X coordinate (pixel).
+.le
+.ls (y0 = INDEF) [real, min=1.0]
+Initial ellipse center Y coordinate (pixel).
+.le
+.ls (ellip0 = 0.2) [real, min=0.05, max=1.0]
+Initial ellipticity, defined as e = 1 - b/a, thus a circle has zero
+ellipticity. The algorithm diverges at zero ellipticity.
+.le
+.ls (pa0 = 20.0) [real, min=-90.0, max=90.0]
+Initial position angle, in degrees, measured counterclockwise from the
++y direction.
+.le
+.ls (sma0 = 10.0) [real, min=5.0]
+Initial semi-major axis length (pixel).
+.le
+.ls (minsma = 0.0) [real, min=0.0]
+Minimum semi-major axis length to be measured (pixel). If set to zero,
+the central pixel intensity will be measured.
+.le
+.ls (maxsma = INDEF) [real, min=1.0]
+Maximum semi-major axis length to be measured (pixel).
+.le
+.ls (step = 0.1) [real, min=1.0e-3]
+Step in semi-major axis length between successive ellipses. 
+In case of geometric steps, the semi-major axis length for the next 
+ellipse is calculated as either (1.0 + 'step') or (1.0/(1.0 + 'step')) 
+times the current length, depending on the sense of growing.
+In case of linear steps, the semi-major axis length for the 
+next ellipse is calculated as either SMA + 'step' or SMA - 'step', where 
+SMA is the current length, depending on the sense of growing
+(this is described in more detail in the description section 
+above).  
+.le
+.ls (linear = no) [boolean]
+Increase/decrease semi-major axis by linear step, as opposed to geometric ?
+.le
+.ls (maxrit = INDEF) [real, min=0.0]
+Maximum semi-major axis length for iterative mode. Beyond this length,
+non-iterative mode is entered regardless of other conditions.
+.le
+.ls (recenter = yes) [boolean]
+Allows finding routine to re-center x0-y0 after successful object detection ?
+.le
+.ls (xylearn = yes) [boolean]
+Updates pset with new x0-y0, either from finding routine, from first fit
+or from keyboard input ?
+.le
+.ls (physical = yes) [boolean]
+Use physical coordinate system, as opposed to input section coordinate system ?
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+ellipse, controlpar
+.endhelp

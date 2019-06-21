@@ -1,0 +1,86 @@
+.help isoimap Nov95 stsdas.analysis.isophote
+.ih
+NAME
+isoimap -- Superposes ellipses to the gray-scale image display.
+.ih
+USAGE
+isoimap  image table 
+.ih
+DESCRIPTION
+The 'isoimap' task displays the original image in the gray-scale image
+display, and superposes ellipses on it. Ellipse data is taken from a table 
+created by the 'ellipse' task. 
+
+This task is a script which calls the tasks 'tsort' and 'trebin' in the
+'ttools' package.  These tasks create a temporary table with an
+interpolated version of the original input table.  This temporary table
+is then fed to the hidden task 'map', which creates a set of temporary
+files containing coordinates of ellipse points.  The 'images.tv.display'
+task is then invoked to load the image display with the original image,
+and finally the 'stplot.sgraph' task uses the temporary ellipse point
+files to draw the ellipses. 
+
+The semi-major axis length interval to be plotted is specified by the
+parameters 'minsma' and 'maxsma'. If the 'fulltable' parameter is set to 
+'yes', the full range of semi-major axis lengths available in the table is 
+used instead. Care must be taken with parameters 'minsma' and 'maxsma', 
+because the 'trebin' task can also extrapolate from the original data, 
+and meaningless results could be generated in some cases. Linear
+interpolation is used.  The 'nlevels' parameter specifies the number of
+ellipses to be plotted, up to 10.
+
+Parameters available in the 'display' task can be set before running
+this task so that gray-scale manipulation can be controlled. There are,
+however, limitations in the graphics interface so the task assumes that
+the 'fill' parameter is set to "yes". This also works only when the
+image display is square (i.e., it has an aspect ratio of 1.0).
+
+Packages 'ttools', 'stplot', 'plot', 'images' and 'tv' must be loaded 
+before using this task.
+.ih
+PARAMETERS
+.ls image [file name]
+Input image to be displayed.
+.le
+.ls table [file name]
+Table containing the results of isophotometry analysis 
+(i.e., the table produced by 'ellipse').
+.le
+.ls (fulltable = "yes") [boolean]
+Use full range of semi-major axis from table?
+.le
+.ls (minsma = 1.0) [real, min=0.0]
+Minimum semi-major axis to be plotted.
+.le
+.ls (maxsma = 1.0) [real, min=1.0]
+Maximum semi-major axis to be plotted.
+.le
+.ls (nlevels = 3) [integer, min=2, max=10]
+Number of ellipses.
+.le
+.ls (color = "r") [string, allowed values: r | g | b | w | y]
+Graphics overlay color (colors are red, green, blue, white, or yellow).
+.le
+.ls (frame = 1) [int, min=1, max=4]
+Display frame to be loaded.
+.le
+.ih
+EXAMPLES
+1.  Draw three ellipses taken from an image 
+called 'image' and a table 'table'. Minimum and maximum 
+are 10.0 and 100.0, respectively.
+
+.nf
+st> isoimap  image table fulltable=no amin=10. amax=100. nlevels=3
+.fi
+.ih
+BUGS
+Graphics overlay may lack precision when using image sections 
+with stepping, due to numerical truncation effects.
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+isoexam, ellipse, display
+.endhelp

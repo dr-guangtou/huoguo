@@ -1,0 +1,20 @@
+Menu for the package stsdas.analysis.isophote
+
+         bmodel - Build a model image from isophotal analysis data.
+        ellipse - Fit elliptical isophotes.
+        isoexam - Plot ellipses on the image display (interactive).
+        isoimap - Plot ellipses superposed over the gray-scale image display.
+         isomap - Plot ellipses superposed over image contours.
+        isopall - Plot summary of all results from isophotal analysis.
+        isoplot - Plot results of isophotal analysis.
+     controlpar @ Set algorithm control parameters (pset).
+        geompar @ Set geometry-related parameters (pset).
+         magpar @ Set magnitude scale parameters (pset).
+      samplepar @ Set image sampling control parameters (pset).
+
+Information about 'ellipse' cursor commands is available by typing 
+"help elcursor".  Information about  'isoexam' cursor commands is 
+available by typing "help iscursor".
+
+For more information about the 'isophote' package, type 
+"help isophote option=sysdoc".

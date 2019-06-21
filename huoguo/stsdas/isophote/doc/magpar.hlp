@@ -1,0 +1,69 @@
+.help magpar Dec99 stsdas.analysis.isophote
+.ih
+NAME
+magpar -- Pset with parameters that define the magnitude scale.
+.ih
+USAGE
+magpar
+.ih
+DESCRIPTION
+For the sake of convenience, the 'ellipse' task output includes 
+intensity-related quantities such as isophotal, ellipse and circle-enclosed 
+intensities, expressed in a magnitude scale.  
+This scale is derived from task parameters 'mag0', 'refer', and 
+'zerolevel', and from the corresponding intensity output parameter, 
+according  to the following relation: 
+.nf
+
+m  = mag0  - 2.5 * log10 ((intens - zerolevel) / refer)
+
+.fi
+where 'mag0' and 'refer' are used to set the scale's zero-point,
+and 'zerolevel' can be used to subtract any bias-type offset that applies
+to all pixels in the image. 
+
+Notice that this magnitude output is provided basically for convenience 
+in visualization (e.g. by tasks 'isoplot' and 'isopall'), and not intended
+for subsequent detailed analysis.
+In particular, negative intensities (from, say, a sky-subtracted image) 
+result in magnitudes being computed by:
+.nf
+
+m  = mag0  - 2.5 * log10 (1. / refer)
+
+.fi
+
+Any type of pixel data can be input to the fitting algorithm in 'ellipse':
+linear intensity,
+magnitude, photographic density, etc.  However, correct intensity and
+magnitude scales, and harmonic amplitudes, will result only in the case
+of linear intensity pixels.  
+
+.ls (mag0 = 0.0) [real]
+Magnitude of the reference source.
+.le
+.ls (refer = 1.0) [real, min=1.E-5]
+Intensity of the reference source. 
+.le
+.ls (zerolevel = 0.0) [real]
+Intensity of the zero (bias) signal.
+.le
+.ih
+EXAMPLES
+An image has an average sky level of 120 ADU/pixel, and it is know that the
+sky brightness is 22.5 mag/arcsec^2. The detector adds a 100 ADU bias level
+at every pixel.
+A magnitude scale roughly calibrated 
+in magnitudes/arcsec^2 can be defined by setting
+
+.nf
+magpar.mag0      =  22.5
+magpar.refer     = 120.0
+magpar.zerolevel = 100.0
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+ellipse, elcursor
+.endhelp

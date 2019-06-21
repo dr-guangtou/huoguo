@@ -1,0 +1,136 @@
+.help controlpar Oct97 stsdas.analysis.isophote
+.ih
+NAME
+controlpar -- Set the algorithm control parameters for the 'ellipse' task.
+.ih
+USAGE
+controlpar
+.ih
+DESCRIPTION
+This pset is used to set the algorithm control parameters associated with
+the 'ellipse' task. Two basic controls are implemented here:
+.ls (1)
+At each given isophotal semi-major axis, a convergency criterion for
+stopping iterations.
+.le
+.ls (2)
+At large semi-major axis lengths, a detection criterion for stopping
+growing the ellipses to regions of too low signal-to-noise ratio.
+.le
+
+The in-isophote controls are provided by parameters 'conver', 'minit' and
+'maxit'. Iterations are stopped when either one of the following criteria
+are met:
+.ls (1)
+The largest harmonic amplitude is less than 'conver' times the rms residual 
+of the intensity data around the harmonic fit (see discussion in 'samplepar'
+pset).
+.le
+.ls (2)
+'maxit' iterations are reached.
+.le
+.ls (3)
+More than a given fraction of the elliptical sample points have no
+valid data in then, either because they lie outside the image boundaries 
+or because they where flagged out from the fit (see 'samplepar' pset).
+.le
+
+In any case, a minimum number of iterations 'minit' is always performed. 
+A minimum of 10 iterations guarantees that, on average, 2 iterations will 
+be available for fitting each independent parameter (the four harmonic 
+amplitudes and the intensity level). In the first isophote, the minimum
+number of iterations is 2 * 'minit', to ensure that, even departing from
+not-so-good initial values, the algorithm converges to an appropriate 
+solution.
+
+The main control for preventing ellipses to grow to regions of too 
+low signal-to-noise ratio is provided by parameter 'maxgerr'. It specifies
+the maximum acceptable relative error in the local radial intensity
+gradient. Experiments (see paper quoted in the 'ellipse' help page) showed
+that the fitting precision relates to that relative error. Its usual
+behavior is to increase with semi-major axis, being larger in outer,
+fainter galaxy regions. 
+
+A number of actions may happen when the current gradient error becomes
+larger than 'maxgerr' (or becomes non-significant and thus is set to INDEF)
+in the process of increasing semi-major axis length. If the maximum semi-major 
+axis specified by parameter 'geompar.maxsma' is set to INDEF, semi-major axis 
+grow is stopped and the algorithm proceeds inwards to the galaxy image center. 
+If 'geompar.maxsma' is set to some finite value, and this value is larger than 
+the current semi-major axis length, the algorithm enters non-iterative mode 
+and proceeds outwards until reaching 'geompar.maxsma'.
+
+Non-iterative mode can also be entered if the ellipse center wanders from
+its former position by an amount larger than parameter 'wander'. 
+
+In non-iterative mode, the ellipse geometry parameters (center, ellipticity, 
+position angle) are kept fixed at their last fitted values. This may be useful 
+for sampling regions of very low surface brightness, where the algorithm may 
+become unstable and unable to recover reliable geometry information from isophotes. Non-iterative mode can be entered also if the ellipticity exceeds 
+1.0 or the ellipse center crosses the image boundaries.
+
+The "soft stop" feature is provided as a help in overcoming premature
+stopping by the 'maxgerr' criterion when measuring complex images that
+may trigger the criterion because of, e.g. contamination due to stars,
+HII regions and the like. The gradient error may become artificially
+large in an "isophote" with such contamination, despite the fact that outer
+isophotes still exist with enough signal-to-noise to be properly measured.
+When the 'soft' flag is set to 'yes', the 'maxgerr' criterion will be
+triggered only by two consecutive isophotes having their gradient errors
+exceeding 'maxgerr'.
+
+Parameters 'hcenter', 'hellip' and 'hpa' are provided for holding the
+ellipse geometry parameters fixed, effectively removing them from the 
+fit process. Note that, if the 'geompar.recenter' parameter is set to
+"yes", recentering of the first fitted ellipse will take place even if
+'hcenter' is set to "yes".
+
+In some cases the object locator algorithm mail fail, even though there
+is enough signal-to-noise to start a fit (e.g. in objects with very
+high ellipticity). In those cases the sensitivity of the algorithm
+can be decreased, or it can even be turned off, by lowering the value 
+of parameter 'olthresh'.
+.ih
+PARAMETERS
+.ls (conver = 0.05) [real, min=0.0]
+Convergency criterion. Largest harmonic amplitude must be smaller than
+'conver' times the fit rms.
+.le
+.ls (minit = 10) [int, min=1]
+Minimum number of iterations at each isophote.
+.le
+.ls (maxit = 50) [int, min=2]
+Maximum number of iterations at each isophote.
+.le
+.ls (hcenter = no) [boolean]
+Hold ellipse center fixed during the fit ?
+.le
+.ls (hellip = no) [boolean]
+Hold ellipticity fixed during the fit ?
+.le
+.ls (hpa = no) [boolean]
+Hold position angle fixed during the fit ?
+.le
+.ls (wander = INDEF) [real, min=0.0]
+Limit for ellipse center wandering (in pixels). INDEF disables this control.
+.le
+.ls (maxgerr = 0.5) [real, min=0.0]
+Maximum acceptable gradient relative error.
+.le
+.ls (olthresh = 1.0) [real, min=0.0]
+Threshold for the object locator algorithm. By lowering this value the 
+object locator becomes less strict, in the sense that it will accept lower
+signal-to-noise data. If set to zero, the 'x0', 'y0' values found in
+the 'geompar' pset are used without questioning.
+.le
+.ls (soft = no) [boolean]
+Soft stop ?
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+ellipse
+.endhelp

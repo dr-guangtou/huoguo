@@ -1,0 +1,19 @@
+# Help for the ISOPHOTE package
+
+$isophote	= "stsdas$pkg/analysis/isophote/"
+$doc		= "stsdas$pkg/analysis/isophote/doc/"
+
+ellipse		hlp=doc$ellipse.hlp,	src=isophote$src/t_ellipse.x,
+		sys=doc$ellipse.doc
+elcursor	hlp=doc$elcursor.hlp
+geompar		hlp=doc$geompar.hlp
+samplepar	hlp=doc$samplepar.hlp
+controlpar	hlp=doc$controlpar.hlp
+magpar		hlp=doc$magpar.hlp
+isoplot		hlp=doc$isoplot.hlp,	src=isophote$isoplot.cl
+isopall		hlp=doc$isopall.hlp,	src=isophote$isopall.cl
+isomap		hlp=doc$isomap.hlp,	src=isophote$isomap.cl
+isoimap		hlp=doc$isoimap.hlp,	src=isophote$isoimap.cl
+isoexam		hlp=doc$isoexam.hlp,	src=isophote$src/t_isoexam.x
+iscursor	hlp=doc$ipcursor.hlp
+bmodel		hlp=doc$bmodel.hlp,	src=isophote$bmodel.cl
