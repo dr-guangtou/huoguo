@@ -1,30 +1,12 @@
 # huoguo
 
-> Interactive visulization of HSC massive galaxies
+> My (over-)ambitious goal to achieve `Isophote.x` and `galfit` functions in Python without losing the
+> efficiency
 
-## Build Setup
+## Motivation
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
-```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+* Both 1-D isophotal analysis and 2-D modeling of light distribution of galaxies are useful in dealing with
+  images of galaxies.
+* The most commonly used 1-D analysis tool is the `ellipse` function in the `stsdas.analysis.isophote`
+  package used in `IRAF` environment.
+    - The source code is basically written in C.
