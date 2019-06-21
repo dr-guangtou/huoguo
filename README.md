@@ -1,4 +1,4 @@
-# huoguo
+# Huoguo
 
 > My (over-)ambitious goal to achieve `Isophote.x` and `galfit` functions in Python without losing the efficiency
 
@@ -11,7 +11,7 @@
     - The `isophote` package is already available in Python under the [`photutils.isophote` module](https://github.com/astropy/photutils/tree/master/photutils/isophote). But this is a pure-Python implementation, so the efficiency is much slower than the `IRAF` version.  And it also lacks some of the functionalities of the origin `isophote`. e.g., fix the geometry of the isophote, and the force photometry mode.
     - There is a very [good Python wrapper of `ellipse` by Peter Erwin](https://github.com/perwin/ellipsefits).
     - There is a high-order harmonic expansion of `isophote` called [`isofit`](https://github.com/BogdanCiambur/ISOFIT) by Bogdan Ciambur. The [relevant publication is here](https://arxiv.org/pdf/1507.02691.pdf)
-* ['GALFIT`](https://users.obs.carnegiescience.edu/peng/work/galfit/galfit.html) is a very popular galaxy image fitting tool designed by Chien Peng. Although right now there are many very good alternative choices (e.g. [`imfit` by Peter Erwin](https://www.mpe.mpg.de/~erwin/code/imfit/), ['ProFit` by ICRAR](https://github.com/ICRAR/ProFit)).
+* [`GALFIT`](https://users.obs.carnegiescience.edu/peng/work/galfit/galfit.html) is a very popular galaxy image fitting tool designed by Chien Peng. Although right now there are many very good alternative choices (e.g. [`imfit` by Peter Erwin](https://www.mpe.mpg.de/~erwin/code/imfit/), ['ProFit` by ICRAR](https://github.com/ICRAR/ProFit)).
     - However, `GALFIT v3.0` remains one of the most flexible image fitting tool with the capabilities to fit asymmetric, truncated, or evenr coordinate-rotated 2-D components. Such capabilities can be very useful in many occasions.
 
 ## Practical Reasons
