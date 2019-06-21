@@ -1,0 +1,6 @@
+six
+numpy
+scipy
+pyparsing
+astropy>=3.0
+matplotlib>=2.0
