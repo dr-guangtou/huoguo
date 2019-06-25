@@ -40,6 +40,14 @@
 * `chi2calc.c`: calculates the chi2 of the model.
     - `double chi2calc (int nfree, float **data, float **sig, float **model, long naxes[], int *ndof)`
 
+* `convolve.c`: convolves a model with the PSF. The input PSF must already be Fourier transformed using the `fftpsf.c`.
+    - Complex_naxes[] stores the size of the FFT image, and the size is the number of real+complex pairs. So the physical storage in the x-direction is twice as large as the number in complex_naxes[2].
+    - `void convolve (struct image *model, double **psfft, long complex_naxes[])`
+    - `void complmultipl(double ar1[], double ar2[], unsigned long n)`
+    - `void mkimg (float **array, long naxes[], char *outname, char *tname)`
+    - `void copy_convregion (struct convpars *cpar, float **model, struct image convolved_img, int os)`
+        - copy the convolved region back to the mini-size image
+
 #### Components
 
 #### High-level features
@@ -88,3 +96,13 @@
 * `clearmodel.c`: clears the model image and fitting parameters.
     - `void clear_fpar_images (struct derivs *df, struct fitpars *fpar)`
     - `void clearmodel (struct image *model, struct derivs *df, struct fitpars *fpar)`
+
+* `convregion.c`: figures out how big of a convolution box we have for each object.
+    - `void convregion (struct derivs *df, float a[], struct image *d, struct convpars *cpar)`
+
+* `copymat.c`: `void copymat (float **fmat, double **dmat, long naxes[], int op)`
+* `copy_pars.c`: `void copy_pars (float a[], int ia[], struct fitpars *fpar, int dir)`
+* `copy_struct.c`: copies the parameter structs.
+    - `void copy_struct (struct fitpars *to, struct fitpars *from)`
+* `count_pars.c`: counts the number of parameters.
+    - `void count_pars (struct fitpars *fpar, int *nfree, int *nfixed, int *unused)`
