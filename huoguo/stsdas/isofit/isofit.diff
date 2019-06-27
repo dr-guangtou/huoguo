@@ -1,0 +1,544 @@
+
+####### elbilinear.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elclip.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elcolon.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elcopy.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elcursor.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### eldisplay.x #######
+
+####### eldsample.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### eldump.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elfind.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elfit.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+40,41c40
+< #real	coef[MAX_HARM], cerror[MAX_HARM]# harmonic coefficients
+< real    coef[16], cerror[16]		# harmonic coefficients
+---
+> real	coef[MAX_HARM], cerror[MAX_HARM]# harmonic coefficients
+49d47
+< int     n_harms_ev, n_harms_odd, n_harms	# number of n>1 harmonics (even, odd and total)
+95,96d92
+< 		#call el_harmonics2 (Memr[bufx], Memr[bufy], NPOINT(is), coef, cerror,
+<                 #        4, hrms, EPS(is), err)
+387d382
+< 
+391,399d385
+< 	    #-------------------------------------------------------------------------------------
+<             #coef[1] = 2.
+<             #coef[2] = 2.
+<             #call el_harmonics2 (Memr[bufx], Memr[bufy], NPOINT(is), coef, cerror,
+<             #        2, hrms, EPS(is), err)
+<             #aux = coef[2] * 2. * (1. - EPS(is)) / A(is) / SLOPE(is)
+<             #EPS(is) = EPS(is) - aux
+<             #-------------------------------------------------------------------------------------
+< 
+446a433,443
+> 	# Fit higher order harmonics. Third and fourth harmonics
+> 	# are actual amplitudes in intensity but projected by gradient 
+> 	# and normalized by semi-major axis.
+> 	coef[1] = 3.				# 3rd harmonic
+> 	coef[2] = 3.
+> 	call el_harmonics (Memr[bufx], Memr[bufy], NPOINT(is), coef, cerror, 
+> 			2, hrms, err)
+> 	if (err == ERR) {
+> 	    STOP(al) = ST_SINGULAR
+> 	    call eprintf ("Error in 3rd harmonic fit. ")
+> 	    call eprintf ("Please, verify output table.\n ")
+448,449c445,465
+< 	A3(EHH(is)) = 0.
+< 	B3(EHH(is)) = 0.
+---
+> 	}
+> 	A3(HH(is))  = coef[1]   / A(is) / abs(SLOPE(is)) 
+> 	B3(HH(is))  = coef[2]   / A(is) / abs(SLOPE(is))
+> 	if ((cerror[1] > 0.) && (coef[1] != 0.) &&
+> 	    (cerror[2] > 0.) && (coef[2] != 0.)) {
+> 	    if (!IS_INDEF(RESLOPE(is))) {
+> 	        A3(EHH(is)) = abs(A3(HH(is))) * sqrt((cerror[1] / coef[1])**2 + 
+> 	                      RESLOPE(is)**2)
+> 	        B3(EHH(is)) = abs(B3(HH(is))) * sqrt((cerror[2] / coef[2])**2 + 
+> 	                      RESLOPE(is)**2)
+> 	    } else {
+> 	        # Adopt reasonably large gradient error (~80%).
+> 	        A3(EHH(is)) = abs(A3(HH(is))) * sqrt((cerror[1]/ coef[1])**2 + 
+> 	                      0.64)
+> 	        B3(EHH(is)) = abs(B3(HH(is))) * sqrt((cerror[2]/ coef[2])**2 + 
+> 	                      0.64)
+> 	    }
+> 	} else {
+> 	    A3(EHH(is)) = INDEFR
+> 	    B3(EHH(is)) = INDEFR
+> 	}
+451,452c467,495
+< #------ Fit for upper harmonics simultaneously ---------------------------------------
+< #-------------------------------------------------------------------------------------
+---
+> 	coef[1] = 4.					# 4th harmonic
+> 	coef[2] = 4.
+> 	call el_harmonics (Memr[bufx], Memr[bufy], NPOINT(is), coef, cerror, 
+> 			2, hrms, err)
+> 	if (err == ERR) {
+> 	    STOP(al) = ST_SINGULAR
+> 	    call eprintf ("Error in 4th harmonic fit. ")
+> 	    call eprintf ("Please, verify output table.\n ")
+> 	}
+> 	A4(HH(is))  = coef[1]   / A(is) / abs(SLOPE(is))
+> 	B4(HH(is))  = coef[2]   / A(is) / abs(SLOPE(is))
+> 	if ((cerror[1] > 0.) && (coef[1] != 0.) &&
+> 	    (cerror[2] > 0.) && (coef[2] != 0.)) {
+> 	    if (!IS_INDEF(RESLOPE(is))) {
+> 	        A4(EHH(is)) = abs(A4(HH(is))) * sqrt((cerror[1]/ coef[1])**2 + 
+> 	                      RESLOPE(is)**2)
+> 	        B4(EHH(is)) = abs(B4(HH(is))) * sqrt((cerror[2]/ coef[2])**2 + 
+> 	                      RESLOPE(is)**2)
+> 	    } else {
+> 	        # Adopt reasonably large gradient error (~80%).
+> 	        A4(EHH(is)) = abs(A4(HH(is))) * sqrt((cerror[1]/ coef[1])**2 + 
+> 	                      0.64)
+> 	        B4(EHH(is)) = abs(B4(HH(is))) * sqrt((cerror[2]/ coef[2])**2 + 
+> 	                      0.64)
+> 	    }
+> 	} else {
+> 	    A4(EHH(is)) = INDEFR
+> 	    B4(EHH(is)) = INDEFR
+> 	}
+455,456d497
+< 	n_harms_odd=0
+< 	n_harms_ev=0
+459,482c500,512
+< 	        coef[i] = AI(HARM_NUMBERS(is),i)
+< 	        coef[i+1] = BI(HARM_NUMBERS(is),i)
+< 		if (float(mod(coef[i],2)) > 0.) {
+< 			n_harms_odd=n_harms_odd+2
+< 		} else {
+< 			n_harms_ev = n_harms_ev +2
+< 		}
+< 	}
+< 	A4(HH(is)) = n_harms_odd
+< 	B4(HH(is)) = n_harms_ev
+< 	n_harms = n_harms_odd + n_harms_ev
+< #-------------------------------------------------------------------------------------
+<             call el_harmonics2 (Memr[bufx], Memr[bufy], NPOINT(is), coef, cerror,
+<                         n_harms, hrms, EPS(is), err)
+< 	    if (err == ERR) {
+< 	       STOP(al) = ST_SINGULAR
+< 	       call eprintf ("Error in upper harmonic fit. ")
+< 	       call eprintf ("Please, verify output table.\n ")
+< 	    }
+< 	    do i = 1, NHARM(is), 2 {
+< 		AI(HARM(is),i)  = coef[i]
+< 		BI(HARM(is),i)  = coef[i+1]
+< 		AI(EHARM(is),i) = cerror[i]
+<         BI(EHARM(is),i) = cerror[i+1]
+---
+> 	        coef[1] = AI(HARM_NUMBERS(is),i)
+> 	        coef[2] = BI(HARM_NUMBERS(is),i)
+> 	        call el_harmonics (Memr[bufx], Memr[bufy], NPOINT(is), 
+> 				   coef, cerror, 2, hrms, err)
+> 	        if (err == ERR) {
+> 	            STOP(al) = ST_SINGULAR
+> 	            call eprintf ("Error in upper harmonic fit. ")
+> 	            call eprintf ("Please, verify output table.\n ")
+> 	        }
+> 	        AI(HARM(is),i)  = coef[1]
+> 	        BI(HARM(is),i)  = coef[2]
+> 	        AI(EHARM(is),i) = cerror[1]
+> 	        BI(EHARM(is),i) = cerror[2]
+486d515
+< #-------------------------------------------------------------------------------------
+
+####### elgeometry.x #######
+
+####### elget.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elgetpix.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elgetsec.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elgopen.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elgraphics.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elharmonics.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elharmonics2.x #######
+
+####### elhead.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elimname.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elinrow.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elintegr.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elintfit.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elmask.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elmatrix.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elodqf.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elopens.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elopm.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elpflag.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elplot.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elpolar.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elppix.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elpsample.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elqsortr.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elrtable.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elshow.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elsubpix.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### elzero.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### extnstr.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### ipcolon.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### ipdisplay.x #######
+
+####### ipdoit.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### isofit.x #######
+
+####### reorder.x #######
+
+####### t_ellipse.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+46c46
+< procedure t_isofit ()
+---
+> procedure t_ellipse ()
+
+####### t_isoexam.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### t_isofit.x #######
+
+####### t_map.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+
+####### t_model.x #######
+1c1
+< # Copyright restrictions apply - see stsdasbc$copyright.stsdasbc 
+---
+> # Copyright restrictions apply - see stsdas$copyright.stsdas 
+50c50
+< real	r, phi, theta			# polar coordinates
+---
+> real	r, phi				# polar coordinates
+55c55
+< real	a3, b3, a5, b5, a7, b7	# higher-order odd harmonics
+---
+> real	a3, b3, a4, b4			# higher-order harmonics
+61,62d60
+< real	a2, b2, a4, b4, a6, b6, a8, b8, a10, b10, a12, b12 #higher order even harmonics
+< real	n_uh_o, n_uh_e		# number of upper harmonics, saved in A4 and B4
+111c109
+< 	    call printf ("Constructing model...\n")
+---
+> 	    call printf ("Building model...\n")
+202,277c200,215
+< 		call tbcfnd (tp, ES_CA4, cptr, 1)
+<         call tbegtr (tp, cptr, row, n_uh_o)
+<         call tbcfnd (tp, ES_CB4, cptr, 1)
+<         call tbegtr (tp, cptr, row, n_uh_e)
+< 	#------------------------------------------------------------
+< 	#----------------- default harmonics (2,3,4) ----------------
+< 	#------------------------------------------------------------
+< 	    call tbcfnd (tp, ES_CSLOPE, cptr, 1)
+< 	    call tbegtr (tp, cptr, row, slope)
+< 		call tbcfnd (tp, ES_CAI2, cptr, 1)
+<         call tbegtr (tp, cptr, row, a2)
+<         call tbcfnd (tp, ES_CBI2, cptr, 1)
+<         call tbegtr (tp, cptr, row, b2)
+<         call tbcfnd (tp, ES_CAI3, cptr, 1)
+<         call tbegtr (tp, cptr, row, a3)
+<         call tbcfnd (tp, ES_CBI3, cptr, 1)
+<         call tbegtr (tp, cptr, row, b3)
+< 		call tbcfnd (tp, ES_CAI4, cptr, 1)
+<         call tbegtr (tp, cptr, row, a4)
+<         call tbcfnd (tp, ES_CBI4, cptr, 1)
+<         call tbegtr (tp, cptr, row, b4)
+< 	#------------------------------------------------------------
+< 		a5=0.
+< 		b5=0.
+< 		a6=0.
+< 		b6=0.
+< 		a7=0.
+< 		b7=0.
+< 		a8=0.
+< 		b8=0.
+< 		a10=0.
+< 		b10=0.
+< 		a12=0.
+< 		b12=0.
+< 		
+< 		
+< 		if (n_uh_e > 4.) {
+< 			call tbcfnd (tp, ES_CAI6, cptr, 1)
+< 			call tbegtr (tp, cptr, row, a6)
+<             call tbcfnd (tp, ES_CBI6, cptr, 1)
+<             call tbegtr (tp, cptr, row, b6)
+< 		}
+< 		if (n_uh_e > 6.) {
+< 			call tbcfnd (tp, ES_CAI8, cptr, 1)
+<             call tbegtr (tp, cptr, row, a8)
+< 			call tbcfnd (tp, ES_CBI8, cptr, 1)
+<             call tbegtr (tp, cptr, row, b8)
+< 		}
+< 		if (n_uh_e > 8.) {
+< 			call tbcfnd (tp, ES_CAI10, cptr, 1)
+<             call tbegtr (tp, cptr, row, a10)
+<             call tbcfnd (tp, ES_CBI10, cptr, 1)
+<             call tbegtr (tp, cptr, row, b10)
+< 		}
+< 		if (n_uh_e > 10.) {
+< 			call tbcfnd (tp, ES_CAI12, cptr, 1)
+<             call tbegtr (tp, cptr, row, a12)
+<             call tbcfnd (tp, ES_CBI12, cptr, 1)
+<             call tbegtr (tp, cptr, row, b12)
+< 		}
+< 		
+< 		if (n_uh_o > 2.) {
+< 			call tbcfnd (tp, ES_CAI5, cptr, 1)
+< 			call tbegtr (tp, cptr, row, a5)
+<             call tbcfnd (tp, ES_CBI5, cptr, 1)
+<             call tbegtr (tp, cptr, row, b5)
+< 		}
+< 		if (n_uh_o > 4.) {
+< 			call tbcfnd (tp, ES_CAI7, cptr, 1)
+<             call tbegtr (tp, cptr, row, a7)
+< 			call tbcfnd (tp, ES_CBI7, cptr, 1)
+<             call tbegtr (tp, cptr, row, b7)
+<         }
+< 	
+< 
+< 	#------------------------------------------------------------
+---
+> 	        call tbcfnd (tp, ES_CSLOPE, cptr, 1)
+> 	        call tbegtr (tp, cptr, row, slope)
+> 	        call tbcfnd (tp, ES_CA3, cptr, 1)
+> 	        call tbegtr (tp, cptr, row, a3)
+> 	        call tbcfnd (tp, ES_CB3, cptr, 1)
+> 	        call tbegtr (tp, cptr, row, b3)
+> 	        call tbcfnd (tp, ES_CA4, cptr, 1)
+> 	        call tbegtr (tp, cptr, row, a4)
+> 	        call tbcfnd (tp, ES_CB4, cptr, 1)
+> 	        call tbegtr (tp, cptr, row, b4)
+> 	        # Return deviations from ellipticity to 
+> 	        # their original intensity amplitude meaning.
+> 	        a3 = - a3 * slope * a0
+> 	        b3 = - b3 * slope * a0
+> 	        a4 = - a4 * slope * a0
+> 	        b4 = - b4 * slope * a0
+308c246
+< 	                fy = y - real (j)
+---
+> 	                fy = y - real (j)	        
+333,336d270
+< 			if ((phi > 1.57079633) && (phi < 4.71238898))
+< 			   theta=-1.*atan(tan(phi)/(1-eps0)) + 3.14159265
+< 			else
+< 			   theta=-1.*atan(tan(phi)/(1-eps0))
+338,348c272,273
+< 
+< 			    aux = (a2 * sin (2. * theta) + b2 * cos (2. * theta) + 
+< 				   a3 * sin (3. * theta) + a3 * cos (3. * theta) +
+< 				   a4 * sin (4. * theta) + b4 * cos (4. * theta) +
+< 				   a5 * sin (5. * theta) + b5 * cos (5. * theta) +
+<                    a6 * sin (6. * theta) + b6 * cos (6. * theta) +
+<                    a7 * sin (7. * theta) + b7 * cos (7. * theta) + 
+< 				   a8 * sin (8. * theta) + b8 * cos (8. * theta) +
+< 				   a10 * sin (10. * theta) + b10 * cos (10. * theta) +
+< 				   a12 * sin (12. * theta) + b12 * cos (12. * theta) ) / 4.
+< 				
+---
+> 	                    aux = a3 * sin (3. * phi) + b3 * cos (3. * phi) +
+> 	                          a4 * sin (4. * phi) + b4 * cos (4. * phi) / 4.
+362,363c287
+< 	            #phi = phi + 0.75 / r
+< 		    phi = phi + 0.05 / r
+---
+> 	            phi = phi + 0.75 / r
