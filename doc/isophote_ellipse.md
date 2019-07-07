@@ -240,15 +240,103 @@ write high level tasks.
 
 * `geometry.py`: provides a container class to store parameters for the geometry of an ellipse.
     - `_area(sma, eps, phi, r)`: gets the elliptical sector area.
+    - `IN_MASK` and `OUT_MASK` used for finding the center of the galaxy in the beginning.
+        * This can be replaced with something better.
     - `EllipseGeometry()` class: stores parameters for the geometry of an ellipse.
         * `__init__(self, x0, y0, sma, eps, pa, astep=0.1, linear_growth=False)`
         * `find_center(self, image, threshold=0.1, verbose=True)`: finds the center of a galaxy.
         * `radius(self, angle)`: convert polar angle into polar radius. 
         * `initialize_sector_geometry(self, phi)`: initializes geometry attributes associated with an elliptical sector at the given polar angle `phi`, including the four vertices that define the elliptical section, the sector area, and the angular width of the sector.
-        * `bounding_ellipses(self)`: computes the semimajor axis of the two ellipses that bound the         annulus where integrations take place.
+        * `bounding_ellipses(self)`: computes the semimajor axis of the two ellipses that bound the annulus where integrations take place.
         * `polar_angle_sector_limits(self)`: returns the two polar angles that bound the sector.
         * `to_polar(self, x, y)`: convert x, y coordinate to polar coordinate. There is a scalar (`_to_polar_scalar(self, x, y)`) and a vector (`_to_polar_vectorized(self, x, y)`) version.
-        * `update_sma(self, step)`: calculates an updated value for the semimajor axis, given the
-        current value and the step value.
-        * `reset_sma(self. step)`: changes the direction of semimajor axis growth, from outwards to
-        inwards.
+        * `update_sma(self, step)`: calculates an updated value for the semimajor axis, given the current value and the step value.
+        * `reset_sma(self. step)`: changes the direction of semimajor axis growth, from outwards to inwards.
+
+* `harmonics.py`: provides tools for computing and fitting harmonic functions.
+    * 没必要自己独立作为一个module, 计算部分可以放进数学包，优化部分可以和所有的优化工具放在一起.
+    - `_least_squares_fit(optimize_func, parameters)`: use `scipy.optimize.leastsq` to optimize a function.
+    - `first_and_second_harmonic_function(phi, c)`: simple equation to convert the harmonic coefficients into a correction value at given polar angle
+    - `fit_first_and_second_harmonics(phi, intensities)`: fits the first and second harmonic function values to a set of (angle, intensity) pairs.
+        * Defines a simple function to optimize over: the differences between the corrected value calculated by `first_and_second_harmonics()` and the images data.
+        * Then uses `_least_squares_fit()` to optimize over it.
+    - `fit_upper_harmonic(phi, intensities, order)`: similar, but for higher order harmonics.
+        * For order 3 or 4, including both `an` and `bn` components.
+
+* `integrator.py`:
+    * 完全可以同时给出用不同方法得到的intensity，而且可以考虑得到沿着elliptical path的更多信息
+    - `INTEGRATORS`: a dict that containts all integrators, connecting the class to a name.
+    - `_Integrator` Class: supports different kinds of pixel integration methods.
+        * `__init__(image, geometry, angles, radii, intensities)`.
+            - `geometry`: `EllipseGeometry` instance, shape of the current ellipse.
+            - `angles`, `radii`, `intensities`: list of output values extracted along the elliptical path.
+        * `integrate(self, radius, phi)`: 最基本的method
+        * `_reset()`: resets `_angles`, `_radii`, `_intensities`
+        * `_store_results(self, phi, radius, sample)`: append values to the list; sample is for the `_intensities`.
+        * `_get_polar_angle_step()`: returns the polar angle step used to walk over the elliptical path.
+        * `get_sector_area()`: returns the area of elliptical sectors where the integration takes place.
+        * `is_area()`: check if the integrator is an area integrator.
+    - `_NearestNeighborIntegrator()` Class: inherits from `_Integrator`
+        * Need to convert between polar and image coordinates. 
+        * Just takes the pixel value. We never use this. 
+    - `_BiLinearIntegrator()` Class: inherits from `_Integrator`.
+        * Also needs to convert between polar and image coordinates.
+        * Needs to check image boundaries and check if image is masked.
+        * After that it is just a simple bi-linear interpolation.
+    - `_AreaIntegrator()` Class: inherits from `_Integrator`
+        * An auxiliary bilinear integrator to be used when sector areas contain a too small number of valid pixels
+        * This is a little more complicated, need to study more, but probably is not necessary.
+    - `_MeanIntegrator()` and `_MedianIntegrator()` Classes: inherits from `_Integrator`.
+        * Pretty simple, has a `accumulate` method to gather pixel values. Then use a `compute_sample_value()` method to get the mean or median. This can be simplified.
+    
+* `sample.py`: provides a class to sample data along an elliptical path
+    - `EllipseSample` Class: sample image data along an elliptical path
+        * `__init__(self, image, sma, x0=None, y0=None, astep=0.1, eps=0.2, position_angle=0., sclip=3., nclip=0, linear_growth=False, integrmode='bilinear', geometry=None)`
+            - If `geometry` is from somewhere else, change the `sma` too. This is not very good choice, should have a more consistent way to define ellipse.
+            - This just defines a `EllipseGeometry` object.
+            - Prepare `values`, `mean`, `gradient`, `gradient_error`, `gradient_relative_error`, `sector_area` attributes.
+            - Also have `total_points` and `actual_points` attributes to report the total number of pairs angle-radius that were attempted and the actual number of samples used.
+        * `_extract()`: just a wrapper; calls the `_extract(phi_min=0.05)` function to sample the elliptical path over the image array.
+            - Defines the `integrator` and the initial polar radius and angle.
+            - Walk along the elliptical path to get the intensities, radii, and angle list; also get the `sector_area`.
+            - Perform sigma clipping as designed and compile the results into a 2-D array.
+        * `_sigma_clip(angles, radii, intensities)`: sigma clipping function; calls `_iter_sigma_clip(angle, radii, intensities)` to do the job. 
+            - Can use the `scipy` version for speed.
+        * `update()`: update the `EllipseSample` instance after `extract`
+            - Get the gradient and the error of the gradient; and check if the gradient is meaningful.
+        * `_get_gradient(step)`: get the gradient and gradient error.
+            - Define a new `EllipseSample` at a larger radius and calculate gradient. 
+            - Does not feel like the most efficient approach.
+        * `coordinates()`: convert radii and angles to (x, y). 
+            - This definitely needs to become a common function.
+    - `CentralEllipseSample(EllipseSample)`: special case for the central pixel.
+        * `gradient` and `gradient_error` are `None`; just use the central pixel value.
+    
+- `isophote.py`:  provides classes to store the results of isophote fits.
+    - Now depends on `astropy.table` and `units`. Can remove these dependences.
+    - `Isophote` Class: stores the results of a single isophote.
+        * `__init__(self, sample, niter, valid, stop_code)`
+            - And prepare all the attributes that are going into the output. Similar to `Ellipse` standard output.
+        * Need to have the capability to sort based on `sma` since the fitting starts from an intermediate radius. Using a `__lt__` method.
+        * Properties: `sma`, `eps`, `pa`, `x0`, `y0`
+        * `_compute_fluxes`: computes integrated fluxes in elliptical and circular apertures. 
+            - Returns `tflux_e`, `tflux_c`, `npix_e`, `npix_c`
+            - The "integrations" are done manually; can be improved. 
+        * `_compute_deviations(sample, n)`: computes deviations from a perfect ellipse.
+            - Based on `fit_first_and_second_harmonics` to calculate harmonic coefficients and `first_and_second_harmonic_function` to get the model and residual.
+            - Then use `fit_upper_harmonic` to get the high-order harmonic values.
+            - returns the `a`, `b`, `a_err`, `b_err` values for a given order `n`.
+        * `_compute_errors()`: computes parameter errors based on the diagonal of the covariance matrix of the four harmonic coefficients for harmonics n=1 and n=2.
+            - Get the `x0_err`, `y0_err`, `pa_err`, and `eps_err`. 
+            - The harmonic fitting process is redundant. Need to think more about this, but looks like there is room to improve.
+        * `fix_geometry(isophote)`: simply fix the geometry. 
+            - Now only use this when the isophote is problematic.
+        * `sampled_coordinates()`: calls the `sample.coordinates` function to get the (x,y) coordinates.
+        * `to_table()`: convert the output to `astropy.table.QTable`.
+            - Also has a `__str__` shortcut.
+
+- `fitter.py`: provides a class to fit ellipses.
+
+- `ellipse.py`: provides a class to fit elliptical isophotes.
+
+- `model.py`: profiles tools for building a model elliptical galaxy image from a list of isophotes.
