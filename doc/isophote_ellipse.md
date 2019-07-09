@@ -334,6 +334,15 @@ write high level tasks.
         * `sampled_coordinates()`: calls the `sample.coordinates` function to get the (x,y) coordinates.
         * `to_table()`: convert the output to `astropy.table.QTable`.
             - Also has a `__str__` shortcut.
+    - `CentralPixel(Isophote)` Class: for the special central pixel.
+        * Most of the values and properties are fixed at 0 or `None`
+    - `IsophoteList(Isophote)` Class: the container for a list of `isophote` objects.
+        * The list itself is stored in `._list`.
+        * Has standard `__len__`, `__delitem__`, `__setitem__`, `__getitem__`, `__iter__`, `__add__` methods.
+        * Has `sort()`, `insert(index, value)`, `append(value)`, `etend(value)` methods.
+        * `get_closest(sma)`: return the closest isophote to a radii.
+        * `_collect_as_array(name)` and `_collect_as_list(name)`: collect certain attribute from the isophote object, and keep them in a list or array. The results are presented as properties of the object.
+    - `_isophote_list_to_table(isophote_list)`: converts the isophote object list to a `astropy` table.
 
 - `fitter.py`: provides a class to fit ellipses.
 
