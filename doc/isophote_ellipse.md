@@ -345,7 +345,36 @@ write high level tasks.
     - `_isophote_list_to_table(isophote_list)`: converts the isophote object list to a `astropy` table.
 
 - `fitter.py`: provides a class to fit ellipses.
+    - A bunch of DEFAULT parameters are defined here.
+    - `_CORRECTORS = [_PositionCorrector0(), _PositionCorrector1(), _AngleCorrector(), _EllipticityCorrector()]`: in every iteration, the central position, PA, and ellipticity are changing; and everytime they change, you need a new sample.
+        * `_PositionCorrector(_ParameterCorrector)`: change the center to `geometry.x0 + dx` and `geometry.y0 + dy`, redefine a new `EllipseSample`.
+        * `_PositionCorrector0(_PositionCorrector)`: calculate the `dx` and `dy` based on `harmonic`, `eps`, and `gradient`.
+        * `_PositionCorrector1(_PositionCorrector)`: similar...
+        * `_AngleCorrector(_ParameterCorrector)`: provides a new PA to define new sample.
+        * `_EllipticityCorrector(_ParameterCorrector)`: provides a new ellipticity value to define a new sample.
+    - `CentralEllipseFitter(EllipseFitter)`: special class for central pixel. Just returns the `CentralPixel` value.
+    - `EllipseFitter` Class: to fit ellipses.
+        * `__init__(sample)`: takes an `isophote.EllipseSample` instance.
+        * ` _check_conditions(sample, maxgerr, going_inwards, lexceed)`: 
+            * `lexceed`: this flag signals that limiting gradient error (`maxgerr`) wasn't exceeded yet.
+            * Check the center, the gradient error, the geometry; returns a flag `proceed` to tell the fitter to proceed or not.
+        * `fit(conver=DEFAULT_CONVERGENCE, minit=DEFAULT_MINIT, maxit=DEFAULT_MAXIT, fflag=DEFAULT_FFLAG, maxgerr=DEFAULT_MAXGERR, going_inwards=False)`: core function.
+            * Use the current `self._sample`
+            * Also tracks the sample that caused the minimu harmonic amplitude(in absolute value). Use it for isophote if `maxit` is exceeded or `fflag` are set.
+            * Now start the iteration in range of `maxit`:
+            * 1. `sample.update()`: compute its gradient and associated values.
+            * 2. `sample.extract()`: get values for angles, radii, and intensity.
+            * 3. `fit_first_and_second_harmonics`: not allowed to fail at this step; get `coeffs`.
+            * 4. Find the largest harmonic amplitude value and see if it decreases compared to `minimum_amplitude_value`; if so, update the value; `largest_harmonic_index` holds the index of the parameter that drives the large amplitude.
+            * 5. `first_and_second_harmonic_function` to compute the `model`; and get the residual; check if the result is converged.; it may not have converged yet, but the sample contains too many invalid data points: return.
+            * 6. Choose a `corrector` using the `largest_harmonic_index`; correct and update the sample.
+            * 7. Check the condition using `_check_conditions`; if not `proceed`, return the current sample.
 
 - `ellipse.py`: provides a class to fit elliptical isophotes.
+    - This is the "user interface", it depends on `fitter`, `geometry`, `integrator`, `isophote`, `sample`.
+    - `Ellipse` Class: to fit elliptical isophotes to a galaxy image.
+        * `__init__(image, geometry=None, threshold=0.1)`: geometry is stored in `_geometry`.
+        * `set_threshold(self, threshold)`: `threshold` is only used for central position.
+        * `fit_image()`: key function to fit multiple isophotes to image. It takes almost all the contral parameters as input.
 
 - `model.py`: profiles tools for building a model elliptical galaxy image from a list of isophotes.
