@@ -376,5 +376,36 @@ write high level tasks.
         * `__init__(image, geometry=None, threshold=0.1)`: geometry is stored in `_geometry`.
         * `set_threshold(self, threshold)`: `threshold` is only used for central position.
         * `fit_image()`: key function to fit multiple isophotes to image. It takes almost all the contral parameters as input.
+            - `isophote_list` is the container.
+            - Choose an appropriate `sma0`. 
+            - First, go from initial sma outwards until hitting one of several stopping criteria
+                * 1. Fit the first isophote using `fit_isophote` for a longer time.
+                * 2. Check the `isophote.stop_code`; if failed, `_fix_last_isophote`.
+                * 3. If two consecutive isophotes failed to fit, shut off iterative mode. Or, bail out and change to go inwards.
+                * 4. Update `sma` of the `geometry`; if `sma > maxsma`, stop the iteration.
+            - Rest `sma` to go inwards:
+                * 1. Behaviour is a little different: if the fitting is failed, fix the `isophote`, but keep going.
+                * 2. Update `sma` of the `geometry`; if `sma < minsma`, stop the iteration.
+            - If `minsma == 0`: extract the special "isophote" for central pixel.
+            - Sort the `isophote_list` by `sma`.
+        * `fit_isophote()`: key function to fit a single isophote.
+            - Setup `geometry`; if `isophote_list` available, use the last one as initial guess.
+            - The fitting is separated into `noniterate` and `iterate` modes.
+                * `_iterative()` function takes a lot of parameters as inputs (can be improved).
+                    - Get a sample based on the parameters and the correct fitter. 
+                    - Run `fitter.fit()` to get the `isophote`. 
+                * `_non_iterative` function:
+                    - Just get a sample and use it to define an `isophote`.
+        * `_fix_last_isophote(isophote_list, index)`: check if `isophote` is bad; if so, fix its geometry to be like the geometry of the index-th isophote in list.
+            - `isophote_list.pop()` and `isophote.fix_geometry()`
+            - Use the new geometry to extract a sample, define an `Isophote` object, append it to the list.
 
 - `model.py`: profiles tools for building a model elliptical galaxy image from a list of isophotes.
+    - `build_ellipse_model(shape, isolist, fill=0., high_harmonics=False)`
+        * Using the `LSQUnivariateSpline` in `scipy.interpolate` to interpolate all the profiles to a finer grid with 0.1 pixel space.
+        * Make sure all the `eps` are useful.
+        * Start the iteration, define geometry on the finer-spaced `sma` grid. 
+            - At each `sma`, "scan" slightly over a full circle.
+            - Get the high-harmonic values if necessary.
+            - Convert (r, phi) to (x, y); ignore pixel outside the image.
+            - Add up the contribution of isophote to pixels.
