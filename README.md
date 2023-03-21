@@ -47,6 +47,7 @@
 - The centerpiece of the photometric analysis is the extraction of the surface brightness profiles of the massive galaxies. For this purpose, we will build a non-parametric 2-D model of the galaxy or perform isophotal analysis of the galaxy.
   - We will use the `Python` code [`AutoProf-Legacy`](https://github.com/ConnorStoneAstro/AutoProf-Legacy) to perform the isophotal analysis. And we will also explore the application of the new [`AutoProf`](https://github.com/ConnorStoneAstro/AutoProf) code to build non-parametric models. 
 - We will consider the impact of background subtraction, contaminating objects, blending scenarios, and the PSF on the surface brightness profiles.
+- We will also test the [`imcascade`](https://github.com/tbmiller-astro/imcascade) code to perform a multi-gaussian expansion (MGE) analysis of the galaxy.
 - We will also consider the forward modeling approach to build the 2-D models of the galaxies.
 
 #### Downloading Imaging Data 
