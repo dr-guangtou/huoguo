@@ -4,7 +4,7 @@
 
 - Song Huang 
 
-- We have recently repurposed this repo to carry out photometric analysis & stellar mass distribution estimates of $0.1<z<0.6$ massive galaxies in the Hyper Suprime-Cam Subaru Strategic Program (HSC-SSP).
+- We have recently repurposed this repo to carry out photometric analysis & stellar mass distribution estimates of 0.1<z<0.6 massive galaxies in the Hyper Suprime-Cam Subaru Strategic Program (HSC-SSP).
 - We will use this repo to keep track of the progress of the analysis. We will store the `Jupyter` notebooks, `Python` scripts, and necessary `Markdown` notes in this repo.
 ## Introduction
 
