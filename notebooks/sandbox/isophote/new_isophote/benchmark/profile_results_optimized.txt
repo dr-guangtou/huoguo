@@ -1,0 +1,82 @@
+Generating synthetic Sersic n=4 image...
+Profiling Optimized Fitting...
+         366541 function calls in 0.530 seconds
+
+   Ordered by: cumulative time
+   List reduced from 131 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.530    0.530 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/profile_isophote.py:29(run_optimized)
+        1    0.000    0.000    0.530    0.530 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:936(fit_image)
+       65    0.023    0.000    0.530    0.008 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:607(fit_isophote)
+     1783    0.068    0.000    0.189    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:113(extract_isophote_data)
+      882    0.010    0.000    0.165    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:532(compute_gradient)
+     1636    0.042    0.000    0.119    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:220(fit_first_and_second_harmonics)
+      754    0.016    0.000    0.109    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:344(compute_parameter_errors)
+     3543    0.039    0.000    0.067    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:151(_var)
+     2789    0.004    0.000    0.065    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3869(std)
+     2789    0.008    0.000    0.061    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:221(_std)
+     1784    0.007    0.000    0.055    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/scipy/ndimage/_interpolation.py:374(map_coordinates)
+     1636    0.041    0.000    0.041    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:275(harmonic_function)
+     3419    0.014    0.000    0.031    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/shape_base.py:220(vstack)
+     1636    0.013    0.000    0.030    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/linalg/_linalg.py:320(solve)
+    10776    0.028    0.000    0.028    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      124    0.003    0.000    0.027    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:447(compute_deviations)
+     1783    0.018    0.000    0.026    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/function_base.py:25(linspace)
+     1784    0.026    0.000    0.026    0.000 {built-in method scipy.ndimage._nd_image.geometric_transform}
+     1636    0.012    0.000    0.023    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/linalg/_linalg.py:496(inv)
+     1907    0.002    0.000    0.019    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3735(mean)
+      124    0.003    0.000    0.019    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/scipy/optimize/_minpack_py.py:292(leastsq)
+     1784    0.004    0.000    0.018    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/scipy/ndimage/_ni_support.py:78(_get_output)
+     1907    0.005    0.000    0.017    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:118(_mean)
+      754    0.001    0.000    0.016    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:4073(var)
+     3419    0.010    0.000    0.015    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/shape_base.py:80(atleast_2d)
+     1784    0.004    0.000    0.012    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_dtype.py:350(_name_get)
+     1783    0.002    0.000    0.012    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2338(sum)
+     5450    0.010    0.000    0.011    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:76(_count_reduce_items)
+     3419    0.010    0.000    0.010    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/numeric.py:213(ones_like)
+      124    0.003    0.000    0.010    0.000 {built-in method scipy.optimize._minpack._lmdif}
+
+
+
+
+Sorted by Internal Time (tottime):
+         366541 function calls in 0.530 seconds
+
+   Ordered by: internal time
+   List reduced from 131 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1783    0.068    0.000    0.189    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:113(extract_isophote_data)
+     1636    0.042    0.000    0.119    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:220(fit_first_and_second_harmonics)
+     1636    0.041    0.000    0.041    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:275(harmonic_function)
+     3543    0.039    0.000    0.067    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:151(_var)
+    10776    0.028    0.000    0.028    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+     1784    0.026    0.000    0.026    0.000 {built-in method scipy.ndimage._nd_image.geometric_transform}
+       65    0.023    0.000    0.530    0.008 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:607(fit_isophote)
+     1783    0.018    0.000    0.026    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/function_base.py:25(linspace)
+      754    0.016    0.000    0.109    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:344(compute_parameter_errors)
+     3419    0.014    0.000    0.031    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/shape_base.py:220(vstack)
+     1636    0.013    0.000    0.030    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/linalg/_linalg.py:320(solve)
+     1636    0.012    0.000    0.023    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/linalg/_linalg.py:496(inv)
+     5450    0.010    0.000    0.011    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:76(_count_reduce_items)
+     3419    0.010    0.000    0.015    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/shape_base.py:80(atleast_2d)
+      882    0.010    0.000    0.165    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:532(compute_gradient)
+     3419    0.010    0.000    0.010    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/numeric.py:213(ones_like)
+     1365    0.008    0.000    0.008    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:484(residual)
+     2789    0.008    0.000    0.061    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:221(_std)
+     1784    0.007    0.000    0.055    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/scipy/ndimage/_interpolation.py:374(map_coordinates)
+    35064    0.006    0.000    0.006    0.000 {built-in method builtins.issubclass}
+     1907    0.005    0.000    0.017    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_methods.py:118(_mean)
+     3272    0.004    0.000    0.009    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/linalg/_linalg.py:148(_commonType)
+     1784    0.004    0.000    0.018    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/scipy/ndimage/_ni_support.py:78(_get_output)
+     1784    0.004    0.000    0.012    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/_dtype.py:350(_name_get)
+    19895    0.004    0.000    0.004    0.000 {built-in method builtins.isinstance}
+     2789    0.004    0.000    0.065    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3869(std)
+      124    0.003    0.000    0.027    0.000 /Users/song/Library/CloudStorage/Dropbox/work/project/massive/huoguo/notebooks/sandbox/isophote/new_isophote/benchmark/../isophote_optimize.py:447(compute_deviations)
+      124    0.003    0.000    0.019    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/scipy/optimize/_minpack_py.py:292(leastsq)
+    21865    0.003    0.000    0.003    0.000 {built-in method numpy.asanyarray}
+     1783    0.003    0.000    0.009    0.000 /Users/song/miniforge3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:69(_wrapreduction)
+
+
+

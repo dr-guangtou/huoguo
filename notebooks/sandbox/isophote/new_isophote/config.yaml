@@ -1,0 +1,46 @@
+# Isophote Analysis Configuration
+
+# Initial Geometry Guesses
+# If not provided, will default to image center
+# x0: 100
+# y0: 100
+eps: 0.2
+pa: 0.0  # Radians
+
+# Sampling Parameters
+pa: 0.0
+
+# SMA range
+minsma: 0.0
+maxsma: 200.0
+
+# Step size
+astep: 0.1
+linear_growth: false
+
+# Convergence parameters
+conver: 0.05
+minit: 10
+maxit: 50
+
+# Quality control parameters
+# Sigma clipping
+sclip: 3.0        # Sigma threshold (symmetric if sclip_low/high not set)
+nclip: 0          # Number of sigma clipping iterations (0 = no clipping)
+sclip_low: null   # Lower sigma threshold (null = use sclip)
+sclip_high: null  # Upper sigma threshold (null = use sclip)
+
+# Flagged data fraction
+fflag: 0.5        # Acceptable fraction of valid data points (0.5 = at least 50% valid)
+
+# Gradient quality
+maxgerr: 0.5      # Maximum acceptable gradient relative error
+
+# Uncertainty calculation
+compute_errors: true  # Calculate parameter uncertainties (adds ~10-20% overhead)
+compute_deviations: true # Calculate higher-order harmonics (A3/B3, A4/B4)
+
+# Fixed parameters
+fix_center: false
+fix_eps: false
+fix_pa: false
